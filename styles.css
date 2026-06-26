@@ -12,6 +12,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  height: var(--tg-viewport-height, 100dvh);
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-ui);
@@ -48,12 +49,12 @@ textarea:focus-visible {
 }
 
 .app-shell {
-  min-height: 100svh;
+  min-height: var(--tg-viewport-height, 100dvh);
   background: var(--color-bg);
 }
 
 .login-screen {
-  min-height: 100svh;
+  min-height: var(--tg-viewport-height, 100dvh);
   display: grid;
   align-content: center;
   gap: var(--space-6);
@@ -168,7 +169,7 @@ textarea {
 }
 
 .mobile-app {
-  min-height: 100svh;
+  min-height: var(--tg-viewport-height, 100dvh);
   padding: calc(76px + var(--safe-top)) var(--space-4) calc(var(--nav-height) + var(--safe-bottom) + 56px);
 }
 
@@ -618,15 +619,16 @@ textarea {
   display: grid;
   gap: var(--space-4);
   padding: var(--space-5);
+  border: 1px solid var(--color-line-soft);
   border-radius: var(--radius-xl);
-  background: linear-gradient(145deg, #111833, #0d355d);
-  color: #fff;
-  box-shadow: 0 18px 42px rgba(9, 26, 70, 0.2);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
 }
 
 .home-score-card h2 {
   margin: 6px 0;
-  color: #fff;
+  color: var(--color-blue);
   font-size: clamp(42px, 12vw, 62px);
   line-height: 0.94;
 }
@@ -634,7 +636,11 @@ textarea {
 .home-score-card p,
 .home-score-card .progress-meta span,
 .home-score-card .progress-meta strong {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--color-muted);
+}
+
+.home-score-card .progress-rail {
+  background: rgba(58, 133, 253, 0.14);
 }
 
 .news-strip {
@@ -758,10 +764,11 @@ textarea {
   display: grid;
   gap: var(--space-4);
   padding: var(--space-5);
+  border: 1px solid var(--color-line-soft);
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-  background: linear-gradient(145deg, #111833, #0d355d);
-  color: #fff;
-  box-shadow: 0 18px 42px rgba(9, 26, 70, 0.22);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
 }
 
 .score-hero-top,
@@ -783,7 +790,7 @@ textarea {
 .level-progress span,
 .level-progress p,
 .score-stats small {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--color-muted);
   font-weight: 850;
 }
 
@@ -795,7 +802,7 @@ textarea {
   align-content: center;
   border-radius: 50%;
   background:
-    radial-gradient(circle, #17203f 58%, transparent 60%),
+    radial-gradient(circle, #fff 58%, transparent 60%),
     conic-gradient(var(--color-yellow) 0 22%, var(--color-blue) 22% 68%, var(--color-green) 68% 100%);
   text-transform: uppercase;
 }
@@ -809,7 +816,7 @@ textarea {
 }
 
 .score-hero .progress-rail {
-  background: rgba(255, 255, 255, 0.13);
+  background: rgba(58, 133, 253, 0.14);
 }
 
 .score-hero .progress-meta {
@@ -839,7 +846,7 @@ textarea {
   min-width: 0;
   padding: 12px 6px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(58, 133, 253, 0.08);
   text-align: center;
 }
 
@@ -1140,23 +1147,23 @@ textarea {
   gap: var(--space-4);
   overflow: hidden;
   padding: var(--space-5);
+  border: 1px solid var(--color-line-soft);
   border-radius: var(--radius-xl);
-  background:
-    radial-gradient(circle at 86% 10%, rgba(117, 234, 137, 0.16), transparent 30%),
-    linear-gradient(145deg, #111833, #0d355d);
-  color: #fff;
-  box-shadow: 0 18px 42px rgba(9, 26, 70, 0.2);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
 }
 
 .progress-hero-card h2 {
   margin: 6px 0 2px;
+  color: var(--color-blue);
   font-size: clamp(48px, 16vw, 74px);
   line-height: 0.9;
 }
 
 .progress-hero-card p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--color-muted);
   font-weight: 800;
   line-height: 1.35;
 }
@@ -1167,11 +1174,11 @@ textarea {
 
 .progress-hero-card .progress-meta span,
 .progress-hero-card .progress-meta strong {
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--color-muted);
 }
 
 .progress-hero-card .progress-rail {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(58, 133, 253, 0.14);
 }
 
 .progress-level-ring {
@@ -1182,20 +1189,20 @@ textarea {
   align-content: center;
   border-radius: 50%;
   background:
-    radial-gradient(circle, #17203f 56%, transparent 58%),
+    radial-gradient(circle, #fff 56%, transparent 58%),
     conic-gradient(var(--color-yellow) 0 22%, var(--color-blue) 22% 70%, var(--color-green) 70% 100%);
   text-align: center;
 }
 
 .progress-level-ring span {
-  color: rgba(255, 255, 255, 0.66);
+  color: var(--color-muted);
   font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
 }
 
 .progress-level-ring strong {
-  color: #fff;
+  color: var(--color-blue);
   font-size: 34px;
   line-height: 0.9;
 }
