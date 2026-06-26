@@ -40,6 +40,7 @@ export function createGameSheet({ state, defaultDate }) {
 
 export function gameDetailSheet(game) {
   const status = getGameStatus(game);
+  const players = game.players || [];
   return `
     <img class="sheet-hero" src="${game.image}" alt="${escapeAttr(game.title)}">
     <div class="sheet-heading">
@@ -59,6 +60,28 @@ export function gameDetailSheet(game) {
       <div class="section-header compact">
         <div><span class="eyebrow">Организатор</span><h3>${escapeHtml(game.organizer)}</h3></div>
         <span class="meta-pill">Рейтинг ${game.rating}</span>
+      </div>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact">
+        <h3>Площадка</h3>
+        <span class="meta-pill">${escapeHtml(game.distance || 'рядом')}</span>
+      </div>
+      <p class="detail-copy">${escapeHtml(game.place)} · м. ${escapeHtml(game.metro)} · ${escapeHtml(game.district)}</p>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact">
+        <h3>Игроки</h3>
+        <span class="meta-pill">${game.current}/${game.max}</span>
+      </div>
+      <div class="player-chip-grid">
+        ${players.length ? players.map((name) => `<span>${escapeHtml(name)}</span>`).join('') : '<span>Список появится после подключения backend</span>'}
+      </div>
+    </section>
+    <section class="section-card flat">
+      <div class="game-social-grid">
+        <button type="button" data-action="open-game-chat"><strong>Чат игры</strong><span>${game.chat || 0} сообщений</span></button>
+        <button type="button" data-action="open-game-chat"><strong>Комментарии</strong><span>${game.comments || 0} обсуждений</span></button>
       </div>
     </section>
     <div class="card-actions">
@@ -82,10 +105,42 @@ export function venueDetailSheet(venue) {
       ${statCard('Рейтинг', venue.rating)}
       ${statCard('Тип', venue.indoor ? 'В помещении' : 'Открытая')}
     </div>
-    <div class="chip-scroll wrap">${venue.amenities.map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
+    <section class="venue-gallery">
+      <img src="${venue.photo}" alt="">
+      <img src="${venue.photo}" alt="">
+      <img src="${venue.photo}" alt="">
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact"><h3>Описание</h3></div>
+      <p class="detail-copy">${escapeHtml(venue.description)}</p>
+      <div class="chip-scroll wrap">
+        <span class="meta-pill">${escapeHtml(venue.distance || 'рядом')}</span>
+        <span class="meta-pill">${escapeHtml(venue.surface || 'покрытие')}</span>
+        <span class="meta-pill">${escapeHtml(venue.size || 'размер')}</span>
+        <span class="meta-pill">${escapeHtml(venue.freeTime || 'свободное время')}</span>
+      </div>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact">
+        <h3>Отзывы</h3>
+        <span class="meta-pill">${venue.reviews || 0} отзывов</span>
+      </div>
+      <p class="detail-copy">Игроки отмечают удобное расположение, чистые раздевалки и стабильное освещение вечером.</p>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact"><h3>Расписание</h3></div>
+      <div class="schedule-grid">
+        ${(venue.schedule || []).map((slot) => `<span>${escapeHtml(slot)}</span>`).join('')}
+      </div>
+    </section>
+    <div class="chip-scroll wrap">${(venue.amenities || []).map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
+    <section class="section-card flat">
+      <div class="section-header compact"><h3>Похожие площадки</h3></div>
+      <p class="detail-copy">Еще 4 площадки с похожей ценой и доступным временем рядом с вашим районом.</p>
+    </section>
     <div class="card-actions">
       <button class="button button-secondary" type="button" data-action="favorite-venue" data-id="${venue.id}">${venue.favorite ? 'В избранном' : 'Сохранить'}</button>
-      <button class="button button-primary" type="button" data-action="create-game">Создать игру</button>
+      <button class="button button-primary" type="button" data-action="book-selected-venue">Забронировать</button>
     </div>
   `;
 }
@@ -127,43 +182,51 @@ export function notificationsSheet(notifications) {
   `;
 }
 
-export function profileDetailSheet(profile) {
+export function profileDetailSheet(profile, editing = false) {
   const nickname = profile.nickname || '#77777';
   const profileItems = [
-    ['Расположение', profile.district || profile.city || 'Москва', './icons/Местоположение%20.png'],
-    ['Номер игрока', nickname, './icons/Профиль.png'],
-    ['Телефон', profile.phone || 'Не указан', './icons/Телефон.png'],
-    ['Почта', profile.email || 'Не указана', './icons/Почта.png'],
-    ['Соцсеть', profile.social || 'Не указана', './icons/Сайт.png']
+    ['Расположение', 'district', profile.district || profile.city || 'Москва', './icons/Местоположение%20.png'],
+    ['Номер игрока', 'nickname', nickname, './icons/Профиль.png'],
+    ['Телефон', 'phone', profile.phone || 'Не указан', './icons/Телефон.png'],
+    ['Почта', 'email', profile.email || 'Не указана', './icons/Почта.png'],
+    ['Соцсеть', 'social', profile.social || 'Не указана', './icons/Сайт.png']
   ];
+  const tag = editing ? 'form' : 'section';
+  const formAttrs = editing ? ' id="profile-form"' : '';
+  const avatarAction = editing ? 'change-avatar' : 'view-avatar';
   return `
-    <section class="profile-detail-card">
-      <span class="eyebrow profile-detail-kicker">Профиль игрока</span>
-      <div class="profile-detail-heading">
-        <h2>${escapeHtml(profile.name)}</h2>
-        <p>${escapeHtml(nickname)}</p>
-      </div>
+    <${tag}${formAttrs} class="profile-detail-card ${editing ? 'is-editing' : ''}">
+      <div class="profile-sticky-title" data-profile-sticky-title>Профиль игрока</div>
       <div class="profile-detail-avatar-row">
         <button class="profile-detail-action is-primary" type="button" data-action="share-profile" aria-label="Поделиться профилем">
           <img src="./icons/поделиться.png" alt="" aria-hidden="true">
         </button>
-        <button class="profile-detail-avatar-button" type="button" data-action="view-avatar" aria-label="Открыть аватар">
+        <button class="profile-detail-avatar-button" type="button" data-action="${avatarAction}" aria-label="${editing ? 'Сменить аватар' : 'Открыть аватар'}">
           <img class="profile-detail-avatar" src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
         </button>
         <button class="profile-detail-action" type="button" data-action="edit-profile" aria-label="Редактировать профиль">
           <img src="./icons/Редактировать.png" alt="" aria-hidden="true">
         </button>
       </div>
+      <div class="profile-detail-heading">
+        ${editing ? `
+          <label class="profile-inline-field is-name">Имя и фамилия<input name="name" value="${escapeAttr(profile.name)}"></label>
+          <label class="profile-inline-field is-nickname">ID игрока<input name="nickname" value="${escapeAttr(nickname)}"></label>
+        ` : `
+          <h2>${escapeHtml(profile.name)}</h2>
+          <p>${escapeHtml(nickname)}</p>
+        `}
+      </div>
       <div class="profile-detail-metrics">
         ${statCard('Игр сыграно', profile.stats.games)}
         ${statCard('Очков SCORE', Number(profile.stats.scorePoints || 0).toLocaleString('ru-RU'))}
       </div>
       <div class="profile-info-grid">
-        ${profileItems.map(([label, value, icon]) => `
-          <div class="profile-info-item ${label === 'Почта' || label === 'Расположение' ? 'wide' : ''}">
+        ${profileItems.map(([label, name, value, icon]) => `
+          <div class="profile-info-item">
             <img src="${icon}" alt="" aria-hidden="true">
             <span>${escapeHtml(label)}</span>
-            <strong>${escapeHtml(value)}</strong>
+            ${editing && name !== 'nickname' ? `<input name="${name}" value="${escapeAttr(value)}">` : `<strong>${escapeHtml(value)}</strong>`}
           </div>
         `).join('')}
       </div>
@@ -171,8 +234,11 @@ export function profileDetailSheet(profile) {
         <span>Виды спорта</span>
         <div>${profile.sports.map((sport) => `<b>${escapeHtml(sport.type)}</b>`).join('')}</div>
       </div>
-      <p class="profile-detail-about">${escapeHtml(profile.about)}</p>
-    </section>
+      ${editing ? `
+        <label class="profile-detail-about is-editing">О себе<textarea name="about">${escapeHtml(profile.about)}</textarea></label>
+        <button class="button button-primary button-full profile-submit" type="button" data-action="save-profile">Сохранить</button>
+      ` : `<p class="profile-detail-about">${escapeHtml(profile.about)}</p>`}
+    </${tag}>
   `;
 }
 
@@ -217,39 +283,5 @@ export function avatarChangeSheet(profile) {
         `).join('')}
       </div>
     </section>
-  `;
-}
-
-export function profileEditSheet(profile) {
-  return `
-    <div class="sheet-heading">
-      <span class="eyebrow">Профиль</span>
-      <h2>Настроить профиль</h2>
-    </div>
-    <form id="profile-form" class="form-grid profile-edit-form">
-      <button class="avatar-upload" type="button" data-action="change-avatar">
-        <span><img src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt=""></span>
-        <strong>Аватар профиля</strong>
-        <small>Откройте отдельный экран выбора</small>
-        <b>Сменить аватар</b>
-      </button>
-      <section class="profile-form-card">
-        <label class="field">Имя<input name="name" value="${escapeAttr(profile.name)}"></label>
-        <label class="field">Никнейм<input name="nickname" value="${escapeAttr(profile.nickname || '#77777')}"></label>
-        <label class="field">Район<input name="district" value="${escapeAttr(profile.district)}"></label>
-        <label class="field">Телефон<input name="phone" value="${escapeAttr(profile.phone || '')}"></label>
-        <label class="field">Почта<input name="email" value="${escapeAttr(profile.email || '')}"></label>
-        <label class="field">Соцсеть<input name="social" value="${escapeAttr(profile.social || '')}"></label>
-        <label class="field">О себе<textarea name="about">${escapeHtml(profile.about)}</textarea></label>
-      </section>
-      <section class="profile-form-card">
-      <div class="form-pair">
-        <label class="field">Цель<select name="goal"><option>${escapeHtml(profile.goal)}</option><option>Играть чаще</option><option>Найти команду</option><option>Ежедневная активность</option></select></label>
-        <label class="field">Уровень<select name="level"><option>${escapeHtml(profile.level)}</option><option>Новичок</option><option>Любитель</option><option>Средний</option><option>Продвинутый</option></select></label>
-      </div>
-      <label class="field">Шаги в день<input name="stepGoal" type="number" min="4000" max="20000" step="500" value="${profile.stepGoal}"></label>
-      </section>
-      <button class="button button-primary button-full profile-submit" type="button" data-action="save-profile">Сохранить</button>
-    </form>
   `;
 }

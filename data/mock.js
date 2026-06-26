@@ -33,7 +33,35 @@ export const defaultProfile = {
     teams: 3,
     attendance: 91,
     levelScore: 47,
-    levelTarget: 70
+    levelTarget: 70,
+    minutesOnVenues: 3760,
+    bookings: 18,
+    favoriteSport: 'Футбол',
+    favoriteVenue: 'Арена Лужники 7×7',
+    week: {
+      games: 3,
+      scorePoints: 860,
+      minutes: 240,
+      wins: 2,
+      bookings: 1
+    },
+    month: {
+      games: 12,
+      scorePoints: 3200,
+      minutes: 960,
+      wins: 8,
+      bookings: 5
+    }
+  },
+  achievements: [
+    { title: '50 игр', text: 'Осталось 3 игры до отметки', progress: 94, icon: '⚽', status: 'Почти готово', rarity: 'Редкое', date: '', unlocked: false },
+    { title: 'Футбольный мастер', text: '25 матчей по футболу в SCORE', progress: 100, icon: '🏆', status: 'Получено', rarity: 'Эпическое', date: '12 июн.', unlocked: true },
+    { title: 'Командный игрок', text: '10 командных матчей без пропусков', progress: 100, icon: '🤝', status: 'Получено', rarity: 'Редкое', date: '4 июн.', unlocked: true },
+    { title: '100 игр', text: 'Большая сезонная цель', progress: 47, icon: '🔥', status: 'Цель', rarity: 'Легендарное', date: '', unlocked: false }
+  ],
+  history: {
+    games: ['Вечерний футбол 5×5', 'Баскетбол 3×3 вечером', 'Беговая тренировка'],
+    bookings: ['Арена Лужники 7×7 · 18 июн.', 'Belka Squash · 11 июн.']
   }
 };
 
@@ -64,6 +92,40 @@ export const notifications = [
   }
 ];
 
+export const homeMvp = {
+  hero: {
+    type: 'Ближайшая игра',
+    title: 'Вечерний футбол 5×5',
+    text: 'Сегодня в 20:30 · SCORE Arena Юго-Восток. Состав почти собран, подтвердите участие заранее.',
+    action: 'Открыть игру',
+    gameId: 'g1'
+  },
+  quickActions: [
+    { title: 'Найти игру', text: 'Подбор рядом', action: 'find-game', icon: './icons/Игры.png' },
+    { title: 'Создать игру', text: 'Собрать игроков', action: 'create-game', icon: './icons/Игры.png' },
+    { title: 'Найти площадку', text: 'Фото, цена, метро', action: 'find-venue', icon: './icons/Площадки.png' },
+    { title: 'Собрать команду', text: 'Состав и заявки', action: 'nav', value: 'team', icon: './icons/Профиль.png' },
+    { title: 'Забронировать', text: 'Свободное время', action: 'book-venue', icon: './icons/Площадки.png' },
+    { title: 'Позвать друзей', text: '+150 SCORE', action: 'invite-friends', icon: './icons/поделиться.png' }
+  ],
+  activity: [
+    { label: 'Следующая игра', title: 'Вечерний футбол 5×5', meta: 'Сегодня · 20:30', action: 'game-detail', id: 'g1' },
+    { label: 'Последняя площадка', title: 'Арена Лужники 7×7', meta: 'Сохранена · м. Воробьевы горы', action: 'venue-detail', id: 'v1' },
+    { label: 'Созданная игра', title: 'Беговая тренировка', meta: '11 из 14 игроков', action: 'game-detail', id: 'g3' },
+    { label: 'Новые приглашения', title: '2 приглашения', meta: 'Футбол и падел', action: 'open-notifications' }
+  ],
+  tasks: [
+    { title: 'Подтвердить участие', text: 'Отметьте ближайшую игру до 18:00', progress: 70, reward: 120 },
+    { title: 'Позвать друга', text: 'Пригласите игрока в SCORE', progress: 35, reward: 150 },
+    { title: 'Сыграть 2 матча', text: 'Прогресс к достижению 50 игр', progress: 50, reward: 300 }
+  ],
+  news: [
+    { type: 'Обновление', title: 'Фильтры площадок стали точнее', text: 'Добавили покрытие, освещение, размер и свободное время.' },
+    { type: 'Акция', title: 'Первые бронирования без комиссии', text: 'На этой неделе SCORE возвращает бонусами до 10%.' },
+    { type: 'Статья', title: 'Как собрать стабильную команду', text: 'Короткий гид по ролям, заявкам и расписанию.' }
+  ]
+};
+
 export const venues = [
   {
     id: 'v1',
@@ -74,12 +136,18 @@ export const venues = [
     address: 'ул. Лужники, 24с4',
     price: 3200,
     rating: 4.8,
+    distance: '1.8 км',
+    freeTime: 'Сегодня · 21:00',
+    surface: 'Искусственная трава',
+    size: '7×7',
+    reviews: 128,
     favorite: true,
     label: 'Популярная',
     free: false,
     indoor: false,
     photo: '../SCORE PLAY/venue-photos/1569331748_90f25b1dd39e8a909b8f28193946be12.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Душ', 'Парковка'],
+    schedule: ['19:00 занято', '20:00 занято', '21:00 свободно', '22:00 свободно'],
     description: 'Поле с искусственным покрытием, вечерним светом и быстрым доступом к раздевалкам.'
   },
   {
@@ -91,12 +159,18 @@ export const venues = [
     address: 'Волоколамское шоссе, 88к9с1',
     price: 14100,
     rating: 4.6,
+    distance: '4.2 км',
+    freeTime: 'Завтра · 19:30',
+    surface: 'Искусственная трава',
+    size: '11×11',
+    reviews: 86,
     favorite: false,
     label: 'Новая',
     free: false,
     indoor: false,
     photo: '../SCORE PLAY/venue-photos/luch-field-2-1.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Wi-Fi', 'Инвентарь', 'Парковка'],
+    schedule: ['18:00 занято', '19:30 свободно', '21:00 свободно'],
     description: 'Большое поле 100×64 для матчей, тренировок и командных сборов.'
   },
   {
@@ -108,12 +182,18 @@ export const venues = [
     address: '2-й Краснокурсантский проезд, 12',
     price: 2400,
     rating: 4.7,
+    distance: '6.1 км',
+    freeTime: 'Сегодня · 18:00',
+    surface: 'Грунт',
+    size: 'Корт',
+    reviews: 74,
     favorite: false,
     label: 'Открытая',
     free: false,
     indoor: false,
     photo: '../SCORE PLAY/venue-photos/energy-court-1.jpg',
     amenities: ['Душ', 'Раздевалка', 'Парковка', 'Инвентарь', 'Освещение'],
+    schedule: ['18:00 свободно', '20:00 свободно', '21:00 занято'],
     description: 'Открытые корты с тенниситом, освещением и водой рядом с площадкой.'
   },
   {
@@ -125,12 +205,18 @@ export const venues = [
     address: 'ул. Достоевского, 31',
     price: 4200,
     rating: 4.5,
+    distance: '3.6 км',
+    freeTime: 'Пт · 18:30',
+    surface: 'Паркет',
+    size: 'Зал',
+    reviews: 59,
     favorite: false,
     label: 'В помещении',
     free: false,
     indoor: true,
     photo: '../SCORE PLAY/venue-photos/dostoevskaya-hall-1.jpg',
     amenities: ['Зал', 'Раздевалка', 'Инвентарь', 'Тренер', 'Душ'],
+    schedule: ['18:30 свободно', '20:30 занято', '22:00 свободно'],
     description: 'Универсальный зал для волейбола и баскетбола с высоким потолком.'
   },
   {
@@ -142,12 +228,18 @@ export const venues = [
     address: 'Ленинградский проспект, 31',
     price: 1800,
     rating: 4.9,
+    distance: '5.4 км',
+    freeTime: 'Сегодня · 20:00',
+    surface: 'Сквош-корт',
+    size: 'Корт',
+    reviews: 142,
     favorite: true,
     label: 'Популярная',
     free: false,
     indoor: true,
     photo: '../SCORE PLAY/venue-photos/belka-squash-1.jpg',
     amenities: ['Душ', 'Кафе', 'Раздевалка', 'Инвентарь'],
+    schedule: ['19:00 занято', '20:00 свободно', '21:00 свободно'],
     description: 'Камерные корты для быстрых игр после работы и персональных тренировок.'
   },
   {
@@ -159,12 +251,18 @@ export const venues = [
     address: 'Парк Сокольники',
     price: 0,
     rating: 4.7,
+    distance: '1.2 км',
+    freeTime: 'Всегда открыто',
+    surface: 'Парк',
+    size: 'Маршрут',
+    reviews: 51,
     favorite: false,
     label: 'Открытая',
     free: true,
     indoor: false,
     photo: '../SCORE PLAY/icons/map-area-base.jpg',
     amenities: ['Бесплатно', 'Вода', 'Туалет', 'Парк'],
+    schedule: ['07:00 группа', '19:00 группа', 'Любое время'],
     description: 'Точка сбора для беговых тренировок, интервалов и прогулочных групп.'
   }
 ];
@@ -187,6 +285,10 @@ export const games = [
     max: 10,
     organizer: 'Илья В.',
     rating: 4.8,
+    distance: '1.2 км',
+    players: ['Саша', 'Илья', 'Марк', 'Данил', 'Кирилл', 'Антон'],
+    chat: 8,
+    comments: 3,
     coach: false,
     isNew: true,
     favorite: false,
@@ -212,6 +314,10 @@ export const games = [
     max: 6,
     organizer: 'Алексей Н.',
     rating: 4.6,
+    distance: '3.4 км',
+    players: ['Алексей', 'Петр', 'Игорь', 'Лев', 'Степан'],
+    chat: 5,
+    comments: 2,
     coach: false,
     isNew: false,
     favorite: true,
@@ -237,6 +343,10 @@ export const games = [
     max: 14,
     organizer: 'Дарья А.',
     rating: 4.8,
+    distance: '1.2 км',
+    players: ['Дарья', 'Саша', 'Елена', 'Антон', 'Максим', 'Игорь', 'Оля', 'Никита', 'Марк', 'Роман', 'Лев'],
+    chat: 14,
+    comments: 6,
     coach: true,
     isNew: true,
     favorite: false,
@@ -262,6 +372,10 @@ export const games = [
     max: 4,
     organizer: 'Марина К.',
     rating: 4.9,
+    distance: '5.2 км',
+    players: ['Марина', 'Саша', 'Ирина'],
+    chat: 4,
+    comments: 1,
     coach: true,
     isNew: true,
     favorite: false,
@@ -287,6 +401,10 @@ export const games = [
     max: 12,
     organizer: 'SCORE Club',
     rating: 4.7,
+    distance: '3.6 км',
+    players: ['SCORE Club', 'Илья', 'Дарья', 'Елена', 'Антон', 'Максим', 'Олег', 'Петр', 'Лев', 'Роман', 'Никита', 'Кирилл'],
+    chat: 21,
+    comments: 7,
     coach: false,
     isNew: false,
     favorite: false,

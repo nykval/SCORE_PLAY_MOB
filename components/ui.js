@@ -67,11 +67,11 @@ export function searchBar({ scope, value, placeholder, buttonLabel = '', buttonA
   `;
 }
 
-export function viewToggle(active) {
+export function viewToggle(active, action = 'game-view') {
   return `
     <div class="view-toggle" role="group" aria-label="Вид">
-      <button class="${active === 'list' ? 'is-active' : ''}" type="button" data-action="game-view" data-value="list">Список</button>
-      <button class="${active === 'map' ? 'is-active' : ''}" type="button" data-action="game-view" data-value="map">Карта</button>
+      <button class="${active === 'list' ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action)}" data-value="list">Список</button>
+      <button class="${active === 'map' ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action)}" data-value="map">Карта</button>
     </div>
   `;
 }

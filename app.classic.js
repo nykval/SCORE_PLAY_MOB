@@ -138,7 +138,35 @@ const defaultProfile = {
     teams: 3,
     attendance: 91,
     levelScore: 47,
-    levelTarget: 70
+    levelTarget: 70,
+    minutesOnVenues: 3760,
+    bookings: 18,
+    favoriteSport: 'Футбол',
+    favoriteVenue: 'Арена Лужники 7×7',
+    week: {
+      games: 3,
+      scorePoints: 860,
+      minutes: 240,
+      wins: 2,
+      bookings: 1
+    },
+    month: {
+      games: 12,
+      scorePoints: 3200,
+      minutes: 960,
+      wins: 8,
+      bookings: 5
+    }
+  },
+  achievements: [
+    { title: '50 игр', text: 'Осталось 3 игры до отметки', progress: 94, icon: '⚽', status: 'Почти готово', rarity: 'Редкое', date: '', unlocked: false },
+    { title: 'Футбольный мастер', text: '25 матчей по футболу в SCORE', progress: 100, icon: '🏆', status: 'Получено', rarity: 'Эпическое', date: '12 июн.', unlocked: true },
+    { title: 'Командный игрок', text: '10 командных матчей без пропусков', progress: 100, icon: '🤝', status: 'Получено', rarity: 'Редкое', date: '4 июн.', unlocked: true },
+    { title: '100 игр', text: 'Большая сезонная цель', progress: 47, icon: '🔥', status: 'Цель', rarity: 'Легендарное', date: '', unlocked: false }
+  ],
+  history: {
+    games: ['Вечерний футбол 5×5', 'Баскетбол 3×3 вечером', 'Беговая тренировка'],
+    bookings: ['Арена Лужники 7×7 · 18 июн.', 'Belka Squash · 11 июн.']
   }
 };
 
@@ -169,6 +197,40 @@ const notifications = [
   }
 ];
 
+const homeMvp = {
+  hero: {
+    type: 'Ближайшая игра',
+    title: 'Вечерний футбол 5×5',
+    text: 'Сегодня в 20:30 · SCORE Arena Юго-Восток. Состав почти собран, подтвердите участие заранее.',
+    action: 'Открыть игру',
+    gameId: 'g1'
+  },
+  quickActions: [
+    { title: 'Найти игру', text: 'Подбор рядом', action: 'find-game', icon: './icons/Игры.png' },
+    { title: 'Создать игру', text: 'Собрать игроков', action: 'create-game', icon: './icons/Игры.png' },
+    { title: 'Найти площадку', text: 'Фото, цена, метро', action: 'find-venue', icon: './icons/Площадки.png' },
+    { title: 'Собрать команду', text: 'Состав и заявки', action: 'nav', value: 'team', icon: './icons/Профиль.png' },
+    { title: 'Забронировать', text: 'Свободное время', action: 'book-venue', icon: './icons/Площадки.png' },
+    { title: 'Позвать друзей', text: '+150 SCORE', action: 'invite-friends', icon: './icons/поделиться.png' }
+  ],
+  activity: [
+    { label: 'Следующая игра', title: 'Вечерний футбол 5×5', meta: 'Сегодня · 20:30', action: 'game-detail', id: 'g1' },
+    { label: 'Последняя площадка', title: 'Арена Лужники 7×7', meta: 'Сохранена · м. Воробьевы горы', action: 'venue-detail', id: 'v1' },
+    { label: 'Созданная игра', title: 'Беговая тренировка', meta: '11 из 14 игроков', action: 'game-detail', id: 'g3' },
+    { label: 'Новые приглашения', title: '2 приглашения', meta: 'Футбол и падел', action: 'open-notifications' }
+  ],
+  tasks: [
+    { title: 'Подтвердить участие', text: 'Отметьте ближайшую игру до 18:00', progress: 70, reward: 120 },
+    { title: 'Позвать друга', text: 'Пригласите игрока в SCORE', progress: 35, reward: 150 },
+    { title: 'Сыграть 2 матча', text: 'Прогресс к достижению 50 игр', progress: 50, reward: 300 }
+  ],
+  news: [
+    { type: 'Обновление', title: 'Фильтры площадок стали точнее', text: 'Добавили покрытие, освещение, размер и свободное время.' },
+    { type: 'Акция', title: 'Первые бронирования без комиссии', text: 'На этой неделе SCORE возвращает бонусами до 10%.' },
+    { type: 'Статья', title: 'Как собрать стабильную команду', text: 'Короткий гид по ролям, заявкам и расписанию.' }
+  ]
+};
+
 const venues = [
   {
     id: 'v1',
@@ -179,12 +241,18 @@ const venues = [
     address: 'ул. Лужники, 24с4',
     price: 3200,
     rating: 4.8,
+    distance: '1.8 км',
+    freeTime: 'Сегодня · 21:00',
+    surface: 'Искусственная трава',
+    size: '7×7',
+    reviews: 128,
     favorite: true,
     label: 'Популярная',
     free: false,
     indoor: false,
     photo: '../SCORE PLAY/venue-photos/1569331748_90f25b1dd39e8a909b8f28193946be12.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Душ', 'Парковка'],
+    schedule: ['19:00 занято', '20:00 занято', '21:00 свободно', '22:00 свободно'],
     description: 'Поле с искусственным покрытием, вечерним светом и быстрым доступом к раздевалкам.'
   },
   {
@@ -196,12 +264,18 @@ const venues = [
     address: 'Волоколамское шоссе, 88к9с1',
     price: 14100,
     rating: 4.6,
+    distance: '4.2 км',
+    freeTime: 'Завтра · 19:30',
+    surface: 'Искусственная трава',
+    size: '11×11',
+    reviews: 86,
     favorite: false,
     label: 'Новая',
     free: false,
     indoor: false,
     photo: '../SCORE PLAY/venue-photos/luch-field-2-1.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Wi-Fi', 'Инвентарь', 'Парковка'],
+    schedule: ['18:00 занято', '19:30 свободно', '21:00 свободно'],
     description: 'Большое поле 100×64 для матчей, тренировок и командных сборов.'
   },
   {
@@ -213,12 +287,18 @@ const venues = [
     address: '2-й Краснокурсантский проезд, 12',
     price: 2400,
     rating: 4.7,
+    distance: '6.1 км',
+    freeTime: 'Сегодня · 18:00',
+    surface: 'Грунт',
+    size: 'Корт',
+    reviews: 74,
     favorite: false,
     label: 'Открытая',
     free: false,
     indoor: false,
     photo: '../SCORE PLAY/venue-photos/energy-court-1.jpg',
     amenities: ['Душ', 'Раздевалка', 'Парковка', 'Инвентарь', 'Освещение'],
+    schedule: ['18:00 свободно', '20:00 свободно', '21:00 занято'],
     description: 'Открытые корты с тенниситом, освещением и водой рядом с площадкой.'
   },
   {
@@ -230,12 +310,18 @@ const venues = [
     address: 'ул. Достоевского, 31',
     price: 4200,
     rating: 4.5,
+    distance: '3.6 км',
+    freeTime: 'Пт · 18:30',
+    surface: 'Паркет',
+    size: 'Зал',
+    reviews: 59,
     favorite: false,
     label: 'В помещении',
     free: false,
     indoor: true,
     photo: '../SCORE PLAY/venue-photos/dostoevskaya-hall-1.jpg',
     amenities: ['Зал', 'Раздевалка', 'Инвентарь', 'Тренер', 'Душ'],
+    schedule: ['18:30 свободно', '20:30 занято', '22:00 свободно'],
     description: 'Универсальный зал для волейбола и баскетбола с высоким потолком.'
   },
   {
@@ -247,12 +333,18 @@ const venues = [
     address: 'Ленинградский проспект, 31',
     price: 1800,
     rating: 4.9,
+    distance: '5.4 км',
+    freeTime: 'Сегодня · 20:00',
+    surface: 'Сквош-корт',
+    size: 'Корт',
+    reviews: 142,
     favorite: true,
     label: 'Популярная',
     free: false,
     indoor: true,
     photo: '../SCORE PLAY/venue-photos/belka-squash-1.jpg',
     amenities: ['Душ', 'Кафе', 'Раздевалка', 'Инвентарь'],
+    schedule: ['19:00 занято', '20:00 свободно', '21:00 свободно'],
     description: 'Камерные корты для быстрых игр после работы и персональных тренировок.'
   },
   {
@@ -264,12 +356,18 @@ const venues = [
     address: 'Парк Сокольники',
     price: 0,
     rating: 4.7,
+    distance: '1.2 км',
+    freeTime: 'Всегда открыто',
+    surface: 'Парк',
+    size: 'Маршрут',
+    reviews: 51,
     favorite: false,
     label: 'Открытая',
     free: true,
     indoor: false,
     photo: '../SCORE PLAY/icons/map-area-base.jpg',
     amenities: ['Бесплатно', 'Вода', 'Туалет', 'Парк'],
+    schedule: ['07:00 группа', '19:00 группа', 'Любое время'],
     description: 'Точка сбора для беговых тренировок, интервалов и прогулочных групп.'
   }
 ];
@@ -292,6 +390,10 @@ const games = [
     max: 10,
     organizer: 'Илья В.',
     rating: 4.8,
+    distance: '1.2 км',
+    players: ['Саша', 'Илья', 'Марк', 'Данил', 'Кирилл', 'Антон'],
+    chat: 8,
+    comments: 3,
     coach: false,
     isNew: true,
     favorite: false,
@@ -317,6 +419,10 @@ const games = [
     max: 6,
     organizer: 'Алексей Н.',
     rating: 4.6,
+    distance: '3.4 км',
+    players: ['Алексей', 'Петр', 'Игорь', 'Лев', 'Степан'],
+    chat: 5,
+    comments: 2,
     coach: false,
     isNew: false,
     favorite: true,
@@ -342,6 +448,10 @@ const games = [
     max: 14,
     organizer: 'Дарья А.',
     rating: 4.8,
+    distance: '1.2 км',
+    players: ['Дарья', 'Саша', 'Елена', 'Антон', 'Максим', 'Игорь', 'Оля', 'Никита', 'Марк', 'Роман', 'Лев'],
+    chat: 14,
+    comments: 6,
     coach: true,
     isNew: true,
     favorite: false,
@@ -367,6 +477,10 @@ const games = [
     max: 4,
     organizer: 'Марина К.',
     rating: 4.9,
+    distance: '5.2 км',
+    players: ['Марина', 'Саша', 'Ирина'],
+    chat: 4,
+    comments: 1,
     coach: true,
     isNew: true,
     favorite: false,
@@ -392,6 +506,10 @@ const games = [
     max: 12,
     organizer: 'SCORE Club',
     rating: 4.7,
+    distance: '3.6 км',
+    players: ['SCORE Club', 'Илья', 'Дарья', 'Елена', 'Антон', 'Максим', 'Олег', 'Петр', 'Лев', 'Роман', 'Никита', 'Кирилл'],
+    chat: 21,
+    comments: 7,
     coach: false,
     isNew: false,
     favorite: false,
@@ -528,11 +646,11 @@ function searchBar({ scope, value, placeholder, buttonLabel = '', buttonAction =
   `;
 }
 
-function viewToggle(active) {
+function viewToggle(active, action = 'game-view') {
   return `
     <div class="view-toggle" role="group" aria-label="Вид">
-      <button class="${active === 'list' ? 'is-active' : ''}" type="button" data-action="game-view" data-value="list">Список</button>
-      <button class="${active === 'map' ? 'is-active' : ''}" type="button" data-action="game-view" data-value="map">Карта</button>
+      <button class="${active === 'list' ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action)}" data-value="list">Список</button>
+      <button class="${active === 'map' ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action)}" data-value="map">Карта</button>
     </div>
   `;
 }
@@ -563,6 +681,7 @@ function renderGameCard(game) {
         <div class="card-meta-row">
           <span>${escapeHtml(game.district)}</span>
           <span>м. ${escapeHtml(game.metro)}</span>
+          <span>${escapeHtml(game.distance || 'рядом')}</span>
         </div>
         <div class="chip-line">
           <span>${escapeHtml(game.sport)}</span>
@@ -570,6 +689,11 @@ function renderGameCard(game) {
           <span>${game.current}/${game.max}</span>
           ${game.coach ? '<span>С тренером</span>' : ''}
           ${game.nearby ? '<span>Рядом</span>' : ''}
+        </div>
+        <div class="card-meta-row">
+          <span>${(game.players || []).slice(0, 3).map(escapeHtml).join(', ')}${(game.players || []).length > 3 ? ' +' + ((game.players || []).length - 3) : ''}</span>
+          <span>Чат ${game.chat || 0}</span>
+          <span>Комментарии ${game.comments || 0}</span>
         </div>
         <div class="card-fill">
           <div><span>Набор игроков</span><strong>${game.current}/${game.max}</strong></div>
@@ -606,10 +730,14 @@ function renderVenueCard(venue) {
         <div class="card-meta-row">
           <span>${escapeHtml(venue.address)}</span>
           <span>★ ${venue.rating}</span>
+          <span>${escapeHtml(venue.distance || 'рядом')}</span>
         </div>
         <div class="chip-line">
           <span>${escapeHtml(venue.sport)}</span>
           <span>${venue.indoor ? 'В помещении' : 'Открытая'}</span>
+          <span>${escapeHtml(venue.freeTime || 'Свободное время')}</span>
+          <span>${escapeHtml(venue.surface || 'Покрытие')}</span>
+          <span>${escapeHtml(venue.size || 'Размер')}</span>
           ${(venue.amenities || []).slice(0, 2).map((item) => `<span>${escapeHtml(item)}</span>`).join('')}
         </div>
       </div>
@@ -620,14 +748,19 @@ function renderVenueCard(venue) {
 function renderProfileCard(profile) {
   const nickname = profile.nickname || '#77777';
   const primarySport = profile.sports?.[0]?.type || 'Спорт';
+  const nameParts = String(profile.name || '').trim().split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || profile.name || 'Игрок';
+  const lastName = nameParts.slice(1).join(' ');
   return `
     <article class="profile-card profile-hero card-affordance" role="button" tabindex="0" data-action="profile-detail">
       <div class="profile-head">
         <img src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
         <div class="profile-title">
-          <span class="profile-status">Профиль игрока</span>
-          <h2>${escapeHtml(profile.name)}</h2>
-          <p>${escapeHtml(nickname)} · ${escapeHtml(profile.city || 'Москва')}</p>
+          <p>${escapeHtml(nickname)}</p>
+          <h2>
+            <span>${escapeHtml(firstName)}</span>
+            ${lastName ? `<span>${escapeHtml(lastName)}</span>` : ''}
+          </h2>
         </div>
       </div>
       <div class="profile-identity-row">
@@ -761,6 +894,7 @@ function createGameSheet({ state, defaultDate }) {
 
 function gameDetailSheet(game) {
   const status = getGameStatus(game);
+  const players = game.players || [];
   return `
     <img class="sheet-hero" src="${game.image}" alt="${escapeAttr(game.title)}">
     <div class="sheet-heading">
@@ -780,6 +914,28 @@ function gameDetailSheet(game) {
       <div class="section-header compact">
         <div><span class="eyebrow">Организатор</span><h3>${escapeHtml(game.organizer)}</h3></div>
         <span class="meta-pill">Рейтинг ${game.rating}</span>
+      </div>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact">
+        <h3>Площадка</h3>
+        <span class="meta-pill">${escapeHtml(game.distance || 'рядом')}</span>
+      </div>
+      <p class="detail-copy">${escapeHtml(game.place)} · м. ${escapeHtml(game.metro)} · ${escapeHtml(game.district)}</p>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact">
+        <h3>Игроки</h3>
+        <span class="meta-pill">${game.current}/${game.max}</span>
+      </div>
+      <div class="player-chip-grid">
+        ${players.length ? players.map((name) => `<span>${escapeHtml(name)}</span>`).join('') : '<span>Список появится после подключения backend</span>'}
+      </div>
+    </section>
+    <section class="section-card flat">
+      <div class="game-social-grid">
+        <button type="button" data-action="open-game-chat"><strong>Чат игры</strong><span>${game.chat || 0} сообщений</span></button>
+        <button type="button" data-action="open-game-chat"><strong>Комментарии</strong><span>${game.comments || 0} обсуждений</span></button>
       </div>
     </section>
     <div class="card-actions">
@@ -803,10 +959,42 @@ function venueDetailSheet(venue) {
       ${statCard('Рейтинг', venue.rating)}
       ${statCard('Тип', venue.indoor ? 'В помещении' : 'Открытая')}
     </div>
-    <div class="chip-scroll wrap">${venue.amenities.map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
+    <section class="venue-gallery">
+      <img src="${venue.photo}" alt="">
+      <img src="${venue.photo}" alt="">
+      <img src="${venue.photo}" alt="">
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact"><h3>Описание</h3></div>
+      <p class="detail-copy">${escapeHtml(venue.description)}</p>
+      <div class="chip-scroll wrap">
+        <span class="meta-pill">${escapeHtml(venue.distance || 'рядом')}</span>
+        <span class="meta-pill">${escapeHtml(venue.surface || 'покрытие')}</span>
+        <span class="meta-pill">${escapeHtml(venue.size || 'размер')}</span>
+        <span class="meta-pill">${escapeHtml(venue.freeTime || 'свободное время')}</span>
+      </div>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact">
+        <h3>Отзывы</h3>
+        <span class="meta-pill">${venue.reviews || 0} отзывов</span>
+      </div>
+      <p class="detail-copy">Игроки отмечают удобное расположение, чистые раздевалки и стабильное освещение вечером.</p>
+    </section>
+    <section class="section-card flat">
+      <div class="section-header compact"><h3>Расписание</h3></div>
+      <div class="schedule-grid">
+        ${(venue.schedule || []).map((slot) => `<span>${escapeHtml(slot)}</span>`).join('')}
+      </div>
+    </section>
+    <div class="chip-scroll wrap">${(venue.amenities || []).map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
+    <section class="section-card flat">
+      <div class="section-header compact"><h3>Похожие площадки</h3></div>
+      <p class="detail-copy">Еще 4 площадки с похожей ценой и доступным временем рядом с вашим районом.</p>
+    </section>
     <div class="card-actions">
       <button class="button button-secondary" type="button" data-action="favorite-venue" data-id="${venue.id}">${venue.favorite ? 'В избранном' : 'Сохранить'}</button>
-      <button class="button button-primary" type="button" data-action="create-game">Создать игру</button>
+      <button class="button button-primary" type="button" data-action="book-selected-venue">Забронировать</button>
     </div>
   `;
 }
@@ -848,43 +1036,51 @@ function notificationsSheet(notifications) {
   `;
 }
 
-function profileDetailSheet(profile) {
+function profileDetailSheet(profile, editing = false) {
   const nickname = profile.nickname || '#77777';
   const profileItems = [
-    ['Расположение', profile.district || profile.city || 'Москва', './icons/Местоположение%20.png'],
-    ['Номер игрока', nickname, './icons/Профиль.png'],
-    ['Телефон', profile.phone || 'Не указан', './icons/Телефон.png'],
-    ['Почта', profile.email || 'Не указана', './icons/Почта.png'],
-    ['Соцсеть', profile.social || 'Не указана', './icons/Сайт.png']
+    ['Расположение', 'district', profile.district || profile.city || 'Москва', './icons/Местоположение%20.png'],
+    ['Номер игрока', 'nickname', nickname, './icons/Профиль.png'],
+    ['Телефон', 'phone', profile.phone || 'Не указан', './icons/Телефон.png'],
+    ['Почта', 'email', profile.email || 'Не указана', './icons/Почта.png'],
+    ['Соцсеть', 'social', profile.social || 'Не указана', './icons/Сайт.png']
   ];
+  const tag = editing ? 'form' : 'section';
+  const formAttrs = editing ? ' id="profile-form"' : '';
+  const avatarAction = editing ? 'change-avatar' : 'view-avatar';
   return `
-    <section class="profile-detail-card">
-      <span class="eyebrow profile-detail-kicker">Профиль игрока</span>
-      <div class="profile-detail-heading">
-        <h2>${escapeHtml(profile.name)}</h2>
-        <p>${escapeHtml(nickname)}</p>
-      </div>
+    <${tag}${formAttrs} class="profile-detail-card ${editing ? 'is-editing' : ''}">
+      <div class="profile-sticky-title" data-profile-sticky-title>Профиль игрока</div>
       <div class="profile-detail-avatar-row">
         <button class="profile-detail-action is-primary" type="button" data-action="share-profile" aria-label="Поделиться профилем">
           <img src="./icons/поделиться.png" alt="" aria-hidden="true">
         </button>
-        <button class="profile-detail-avatar-button" type="button" data-action="view-avatar" aria-label="Открыть аватар">
+        <button class="profile-detail-avatar-button" type="button" data-action="${avatarAction}" aria-label="${editing ? 'Сменить аватар' : 'Открыть аватар'}">
           <img class="profile-detail-avatar" src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
         </button>
         <button class="profile-detail-action" type="button" data-action="edit-profile" aria-label="Редактировать профиль">
           <img src="./icons/Редактировать.png" alt="" aria-hidden="true">
         </button>
       </div>
+      <div class="profile-detail-heading">
+        ${editing ? `
+          <label class="profile-inline-field is-name">Имя и фамилия<input name="name" value="${escapeAttr(profile.name)}"></label>
+          <label class="profile-inline-field is-nickname">ID игрока<input name="nickname" value="${escapeAttr(nickname)}"></label>
+        ` : `
+          <h2>${escapeHtml(profile.name)}</h2>
+          <p>${escapeHtml(nickname)}</p>
+        `}
+      </div>
       <div class="profile-detail-metrics">
         ${statCard('Игр сыграно', profile.stats.games)}
         ${statCard('Очков SCORE', Number(profile.stats.scorePoints || 0).toLocaleString('ru-RU'))}
       </div>
       <div class="profile-info-grid">
-        ${profileItems.map(([label, value, icon]) => `
-          <div class="profile-info-item ${label === 'Почта' || label === 'Расположение' ? 'wide' : ''}">
+        ${profileItems.map(([label, name, value, icon]) => `
+          <div class="profile-info-item">
             <img src="${icon}" alt="" aria-hidden="true">
             <span>${escapeHtml(label)}</span>
-            <strong>${escapeHtml(value)}</strong>
+            ${editing && name !== 'nickname' ? `<input name="${name}" value="${escapeAttr(value)}">` : `<strong>${escapeHtml(value)}</strong>`}
           </div>
         `).join('')}
       </div>
@@ -892,8 +1088,11 @@ function profileDetailSheet(profile) {
         <span>Виды спорта</span>
         <div>${profile.sports.map((sport) => `<b>${escapeHtml(sport.type)}</b>`).join('')}</div>
       </div>
-      <p class="profile-detail-about">${escapeHtml(profile.about)}</p>
-    </section>
+      ${editing ? `
+        <label class="profile-detail-about is-editing">О себе<textarea name="about">${escapeHtml(profile.about)}</textarea></label>
+        <button class="button button-primary button-full profile-submit" type="button" data-action="save-profile">Сохранить</button>
+      ` : `<p class="profile-detail-about">${escapeHtml(profile.about)}</p>`}
+    </${tag}>
   `;
 }
 
@@ -941,113 +1140,85 @@ function avatarChangeSheet(profile) {
   `;
 }
 
-function profileEditSheet(profile) {
-  return `
-    <div class="sheet-heading">
-      <span class="eyebrow">Профиль</span>
-      <h2>Настроить профиль</h2>
-    </div>
-    <form id="profile-form" class="form-grid profile-edit-form">
-      <button class="avatar-upload" type="button" data-action="change-avatar">
-        <span><img src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt=""></span>
-        <strong>Аватар профиля</strong>
-        <small>Откройте отдельный экран выбора</small>
-        <b>Сменить аватар</b>
-      </button>
-      <section class="profile-form-card">
-        <label class="field">Имя<input name="name" value="${escapeAttr(profile.name)}"></label>
-        <label class="field">Никнейм<input name="nickname" value="${escapeAttr(profile.nickname || '#77777')}"></label>
-        <label class="field">Район<input name="district" value="${escapeAttr(profile.district)}"></label>
-        <label class="field">Телефон<input name="phone" value="${escapeAttr(profile.phone || '')}"></label>
-        <label class="field">Почта<input name="email" value="${escapeAttr(profile.email || '')}"></label>
-        <label class="field">Соцсеть<input name="social" value="${escapeAttr(profile.social || '')}"></label>
-        <label class="field">О себе<textarea name="about">${escapeHtml(profile.about)}</textarea></label>
-      </section>
-      <section class="profile-form-card">
-      <div class="form-pair">
-        <label class="field">Цель<select name="goal"><option>${escapeHtml(profile.goal)}</option><option>Играть чаще</option><option>Найти команду</option><option>Ежедневная активность</option></select></label>
-        <label class="field">Уровень<select name="level"><option>${escapeHtml(profile.level)}</option><option>Новичок</option><option>Любитель</option><option>Средний</option><option>Продвинутый</option></select></label>
-      </div>
-      <label class="field">Шаги в день<input name="stepGoal" type="number" min="4000" max="20000" step="500" value="${profile.stepGoal}"></label>
-      </section>
-      <button class="button button-primary button-full profile-submit" type="button" data-action="save-profile">Сохранить</button>
-    </form>
-  `;
-}
-
 
 // ---- MOB/screens/index.js ----
 
-function renderHome({ state, nextGame }) {
+function renderHome({ state, nextGame, home }) {
   const profile = state.profile;
-  const stepsLeft = Math.max(0, Number(profile.stepGoal || 0) - Number(profile.stepsDone || 0));
-  const joinedGames = state.games.filter((game) => game.joined);
-  const suggestedGames = state.games.filter((game) => !game.joined && game.current < game.max).slice(0, 2);
+  const stats = profile.stats || {};
+  const hero = home?.hero || {};
+  const heroGame = state.games.find((game) => game.id === hero.gameId) || nextGame;
+  const quickActions = home?.quickActions || [];
+  const activity = home?.activity || [];
+  const tasks = home?.tasks || [];
+  const news = home?.news || [];
   return `
     <div class="screen-stack">
-      <article class="home-main-card">
+      <article class="home-main-card mvp-hero-card">
         <div class="home-main-copy">
-          <span class="eyebrow">Сегодня</span>
-          <h1>${escapeHtml(nextGame.sport)} уже ждёт</h1>
-          <p>${formatGameDate(nextGame)} · ${escapeHtml(nextGame.place)}</p>
+          <span class="eyebrow">${escapeHtml(hero.type || 'Главное сейчас')}</span>
+          <h1>${escapeHtml(hero.title || heroGame.title)}</h1>
+          <p>${escapeHtml(hero.text || `${formatGameDate(heroGame)} · ${heroGame.place}`)}</p>
         </div>
-        <div class="home-game-panel" role="button" tabindex="0" data-action="game-detail" data-id="${nextGame.id}">
-          <img src="${nextGame.image}" alt="">
+        <div class="home-game-panel" role="button" tabindex="0" data-action="game-detail" data-id="${heroGame.id}">
+          <img src="${heroGame.image}" alt="">
           <div>
-            <span>${nextGame.joined ? 'Вы участвуете' : 'Можно присоединиться'}</span>
-            <strong>${escapeHtml(nextGame.title)}</strong>
-            <small>${nextGame.current} из ${nextGame.max} игроков · ${formatPrice(nextGame.price)}</small>
+            <span>${heroGame.joined ? 'Вы участвуете' : 'Есть свободные места'}</span>
+            <strong>${escapeHtml(heroGame.title)}</strong>
+            <small>${formatGameDate(heroGame)} · ${heroGame.current} из ${heroGame.max} игроков · ${formatPrice(heroGame.price)}</small>
           </div>
         </div>
         <div class="home-main-actions">
-          <button class="button button-primary" type="button" data-action="game-detail" data-id="${nextGame.id}">Открыть игру</button>
+          <button class="button button-primary" type="button" data-action="game-detail" data-id="${heroGame.id}">${escapeHtml(hero.action || 'Открыть игру')}</button>
           <button class="button button-secondary" type="button" data-action="nav" data-value="games">Все игры</button>
         </div>
       </article>
 
-      <section class="home-progress-card">
-        <div>
-          <div>
-            <span class="eyebrow">Активность</span>
-            <h2>${formatNumber(profile.stepsDone)} шагов</h2>
-            <p>До цели осталось ${formatNumber(stepsLeft)}. Держим мягкий темп без перегруза.</p>
-          </div>
-          <strong>${Math.round((profile.stepsDone / profile.stepGoal) * 100)}%</strong>
-        </div>
-        ${progressBar(profile.stepsDone, profile.stepGoal, 'Прогресс')}
-      </section>
-
-      <section class="home-profile-card card-affordance" role="button" tabindex="0" data-action="profile-detail">
-        <div>
-          <span class="eyebrow">Профиль</span>
-          <h2>${escapeHtml(profile.name)}</h2>
-          <p>${escapeHtml(profile.nickname || '#77777')} · ${escapeHtml(profile.city || 'Москва')}</p>
-        </div>
-        <div class="home-profile-stats">
-          <span><b>${profile.stats.games}</b><small>игр</small></span>
-          <span><b>${formatNumber(profile.stats.scorePoints)}</b><small>очков</small></span>
-          <span><b>${profile.sports.length}</b><small>спорта</small></span>
-        </div>
-      </section>
-
-      <section class="home-row-section">
+      <section class="home-block">
         <div class="section-header compact">
-          <h2>${joinedGames.length > 1 ? 'Твои игры' : 'Подходит рядом'}</h2>
-          <button class="link-action" type="button" data-action="nav" data-value="games">Все ›</button>
+          <h2>Быстрые действия</h2>
         </div>
-        <div class="home-game-strip">
-          ${(joinedGames.length > 1 ? joinedGames : suggestedGames).map(renderMiniGameTile).join('')}
+        <div class="quick-action-grid">
+          ${quickActions.map(renderQuickAction).join('')}
         </div>
       </section>
 
-      <section class="section-card home-recommendation">
+      <section class="section-card">
         <div class="section-header compact">
-          <div>
-            <span class="eyebrow">Рекомендация</span>
-            <h2>Золотой час</h2>
-            <p>Лучшее окно для тренировки сегодня: меньше людей, мягкий свет и комфортный темп.</p>
-          </div>
-          <strong>19:10</strong>
+          <h2>Моя активность</h2>
+          <button class="link-action" type="button" data-action="open-notifications">Все ›</button>
+        </div>
+        <div class="activity-grid">
+          ${activity.map(renderActivityCard).join('')}
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-header compact">
+          <h2>Ежедневные задания</h2>
+          <span class="result-label">+${formatNumber(tasks.reduce((sum, task) => sum + Number(task.reward || 0), 0))} SCORE</span>
+        </div>
+        <div class="daily-task-list">
+          ${tasks.map(renderDailyTask).join('')}
+        </div>
+      </section>
+
+      <section class="home-score-card">
+        <div>
+          <span class="eyebrow">SCORE</span>
+          <h2>${formatNumber(stats.scorePoints || 0)}</h2>
+          <p>Уровень 4 · до уровня 5 осталось ${Math.max(0, Number(stats.levelTarget || 70) - Number(stats.levelScore || 0))} игр</p>
+        </div>
+        ${progressBar(stats.levelScore || 0, stats.levelTarget || 70, 'Прогресс уровня')}
+      </section>
+
+      <section class="home-block">
+        <div class="section-header compact">
+          <h2>Новости SCORE</h2>
+          <button class="link-action" type="button" data-action="open-notifications">Все ›</button>
+        </div>
+        <div class="news-strip">
+          ${news.map(renderNewsCard).join('')}
         </div>
       </section>
     </div>
@@ -1055,6 +1226,8 @@ function renderHome({ state, nextGame }) {
 }
 
 function renderGamesScreen({ state, games }) {
+  const gameSports = ['Все', ...uniqueSports(state.games)];
+  const gameLevels = ['Все', ...Array.from(new Set(state.games.map((game) => game.level).filter(Boolean)))];
   return `
     <div class="screen-stack">
       ${searchBar({ scope: 'games', value: state.filters.games.query, placeholder: 'Поиск игр', buttonLabel: 'Создать', buttonAction: 'create-game' })}
@@ -1065,6 +1238,57 @@ function renderGamesScreen({ state, games }) {
           ${chip({ label: 'Бесплатно', active: state.filters.games.free, action: 'game-filter', value: 'free' })}
           ${chip({ label: 'С тренером', active: state.filters.games.coach, action: 'game-filter', value: 'coach' })}
           ${chip({ label: 'Рядом', active: state.filters.games.nearby, action: 'game-filter', value: 'nearby' })}
+        </div>
+      </div>
+      <div class="filter-groups">
+        <div>
+          <span>Вид спорта</span>
+          <div class="chip-scroll">${gameSports.map((sport) => chip({ label: sport, active: state.filters.games.sport === sport, action: 'game-filter', value: `sport:${sport}` })).join('')}</div>
+        </div>
+        <div>
+          <span>Дата</span>
+          <div class="chip-scroll">
+            ${[
+              ['any', 'Любая'],
+              ['today', 'Сегодня'],
+              ['week', 'На неделе']
+            ].map(([value, label]) => chip({ label, active: state.filters.games.date === value, action: 'game-filter', value: `date:${value}` })).join('')}
+          </div>
+        </div>
+        <div>
+          <span>Время</span>
+          <div class="chip-scroll">
+            ${[
+              ['any', 'Любое'],
+              ['morning', 'Утро'],
+              ['evening', 'Вечер']
+            ].map(([value, label]) => chip({ label, active: state.filters.games.time === value, action: 'game-filter', value: `time:${value}` })).join('')}
+          </div>
+        </div>
+        <div>
+          <span>Расстояние</span>
+          <div class="chip-scroll">
+            ${[
+              ['any', 'Любое'],
+              ['near', 'До 2 км'],
+              ['five', 'До 5 км']
+            ].map(([value, label]) => chip({ label, active: state.filters.games.distance === value, action: 'game-filter', value: `distance:${value}` })).join('')}
+          </div>
+        </div>
+        <div>
+          <span>Уровень и места</span>
+          <div class="chip-scroll">
+            ${gameLevels.map((level) => chip({ label: level, active: state.filters.games.level === level, action: 'game-filter', value: `level:${level}` })).join('')}
+            ${chip({ label: 'Есть места', active: state.filters.games.slots === 'open', action: 'game-filter', value: 'slots:open' })}
+          </div>
+        </div>
+        <div>
+          <span>Цена</span>
+          <div class="chip-scroll">
+            ${chip({ label: 'Любая', active: state.filters.games.price === 'any', action: 'game-filter', value: 'price:any' })}
+            ${chip({ label: 'Бесплатно', active: state.filters.games.price === 'free', action: 'game-filter', value: 'price:free' })}
+            ${chip({ label: 'Платные', active: state.filters.games.price === 'paid', action: 'game-filter', value: 'price:paid' })}
+          </div>
         </div>
       </div>
       <div class="section-header compact">
@@ -1083,6 +1307,8 @@ function renderVenuesScreen({ state, venues }) {
   const sports = ['Все', ...uniqueSports(state.venues)];
   const locations = ['Все', ...Array.from(new Set(state.venues.flatMap((venue) => [venue.district, venue.metro]).filter(Boolean)))];
   const amenities = ['Все', ...Array.from(new Set(state.venues.flatMap((venue) => venue.amenities || [])))];
+  const surfaces = ['Все', ...Array.from(new Set(state.venues.map((venue) => venue.surface).filter(Boolean)))];
+  const sizes = ['Все', ...Array.from(new Set(state.venues.map((venue) => venue.size).filter(Boolean)))];
   return `
     <div class="screen-stack">
       ${searchBar({ scope: 'venues', value: state.filters.venues.query, placeholder: 'Поиск площадок' })}
@@ -1106,8 +1332,44 @@ function renderVenuesScreen({ state, venues }) {
               ['any', 'Любая'],
               ['free', 'Бесплатно'],
               ['low', 'до 2 500 ₽'],
-              ['mid', '2 500-5 000 ₽']
+              ['mid', '2 500-5 000 ₽'],
+              ['paid', 'Платные']
             ].map(([value, label]) => chip({ label, active: state.filters.venues.price === value, action: 'venue-filter', value: `price:${value}` })).join('')}
+          </div>
+        </div>
+        <div>
+          <span>Расстояние</span>
+          <div class="chip-scroll">
+            ${[
+              ['any', 'Любое'],
+              ['near', 'До 2 км'],
+              ['five', 'До 5 км']
+            ].map(([value, label]) => chip({ label, active: state.filters.venues.distance === value, action: 'venue-filter', value: `distance:${value}` })).join('')}
+          </div>
+        </div>
+        <div>
+          <span>Покрытие</span>
+          <div class="chip-scroll">${surfaces.map((surface) => chip({ label: surface, active: state.filters.venues.surface === surface, action: 'venue-filter', value: `surface:${surface}` })).join('')}</div>
+        </div>
+        <div>
+          <span>Освещение</span>
+          <div class="chip-scroll">
+            ${[
+              ['any', 'Любое'],
+              ['yes', 'Есть свет']
+            ].map(([value, label]) => chip({ label, active: state.filters.venues.lighting === value, action: 'venue-filter', value: `lighting:${value}` })).join('')}
+          </div>
+        </div>
+        <div>
+          <span>Размер площадки</span>
+          <div class="chip-scroll">${sizes.map((size) => chip({ label: size, active: state.filters.venues.size === size, action: 'venue-filter', value: `size:${size}` })).join('')}</div>
+        </div>
+        <div>
+          <span>Рейтинг и оплата</span>
+          <div class="chip-scroll">
+            ${chip({ label: '4.7+', active: state.filters.venues.rating === 'high', action: 'venue-filter', value: 'rating:high' })}
+            ${chip({ label: 'Бесплатные', active: state.filters.venues.paid === 'free', action: 'venue-filter', value: 'paid:free' })}
+            ${chip({ label: 'Платные', active: state.filters.venues.paid === 'paid', action: 'venue-filter', value: 'paid:paid' })}
           </div>
         </div>
         <div>
@@ -1121,7 +1383,9 @@ function renderVenuesScreen({ state, venues }) {
       </div>
       <div class="section-header compact">
         <span class="result-label">Найдено: ${venues.length}</span>
+        ${viewToggle(state.filters.venues.view, 'venue-view')}
       </div>
+      ${state.filters.venues.view === 'map' ? renderVenueMapPreview(venues) : ''}
       <div class="list-stack">
         ${venues.length ? venues.map(renderVenueCard).join('') : emptyState('Площадок не найдено', 'Измените фильтры или посмотрите соседний район.', 'Сбросить фильтры', 'venue-filter', 'reset')}
       </div>
@@ -1129,44 +1393,127 @@ function renderVenuesScreen({ state, venues }) {
   `;
 }
 
-function renderFavoritesScreen({ games, venues }) {
+function renderProgressScreen({ state, joinedGames }) {
+  const stats = state.profile.stats || {};
+  const week = stats.week || {};
+  const month = stats.month || {};
+  const totalMinutes = Math.max(Number(month.minutes || 0) * 4, Number(stats.games || 0) * 78);
+  const achievements = state.profile.achievements || [];
+  const earnedAchievements = achievements.filter((item) => item.unlocked);
+  const progressAchievements = achievements.filter((item) => !item.unlocked);
+  const footballGames = state.games.filter((game) => game.sport === 'Футбол' && game.joined).length || 23;
   return `
     <div class="screen-stack">
-      <section class="favorites-section">
-        <div class="section-header compact"><h2>Избранные площадки</h2><span class="result-label">${venues.length}</span></div>
-        <div class="favorites-strip">
-          ${venues.length ? venues.map(renderFavoriteVenueTile).join('') : emptyState('Пока пусто', 'Сохраняйте площадки, чтобы быстро вернуться к ним.')}
+      <section class="progress-hero-card">
+        <div>
+          <span class="eyebrow">SCORE Progress</span>
+          <h2>${formatNumber(stats.scorePoints || 0)}</h2>
+          <p>очков за активность, игры, команды и сохраненные площадки</p>
+        </div>
+        <div class="progress-level-ring" aria-label="Уровень 4">
+          <span>Уровень</span>
+          <strong>4</strong>
+        </div>
+        ${progressBar(stats.levelScore || stats.games || 0, stats.levelTarget || 70, 'До следующего уровня')}
+      </section>
+
+      <section class="section-card">
+        <div class="section-header compact"><h2>Статистика</h2></div>
+        <div class="progress-period-grid">
+          ${renderPeriodStat('Неделя', week.games || 0, week.scorePoints || 0, week.minutes || 0)}
+          ${renderPeriodStat('Месяц', month.games || 0, month.scorePoints || 0, month.minutes || 0)}
+          ${renderPeriodStat('Все время', stats.games || joinedGames.length, stats.scorePoints || 0, totalMinutes)}
         </div>
       </section>
-      <section class="favorites-section">
-        <div class="section-header compact"><h2>Избранные игры</h2><span class="result-label">${games.length}</span></div>
-        <div class="favorites-strip">
-          ${games.length ? games.map(renderFavoriteGameTile).join('') : emptyState('Игр пока нет', 'Сохраняйте интересные игры из списка.')}
+
+      <section class="section-card">
+        <div class="section-header compact">
+          <h2>Полученные достижения</h2>
+          <span class="result-label">${earnedAchievements.length}</span>
+        </div>
+        <div class="achievement-grid">
+          ${earnedAchievements.length ? earnedAchievements.map(renderAchievement).join('') : emptyState('Пока нет открытых достижений', 'Сыграйте первую игру или забронируйте площадку.')}
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-header compact">
+          <h2>В процессе</h2>
+          <span class="result-label">${progressAchievements.length}</span>
+        </div>
+        <div class="achievement-grid">
+          ${progressAchievements.map(renderAchievement).join('')}
+        </div>
+      </section>
+
+      <section class="section-card progress-master-card">
+        <div>
+          <span class="eyebrow">Мастерство</span>
+          <h2>Футбольный мастер</h2>
+          <p>${footballGames} футбольных игр. Следующая цель: 30 игр и стабильная посещаемость выше 90%.</p>
+        </div>
+        ${progressBar(footballGames, 30, 'Футбольный мастер')}
+      </section>
+
+      <section class="section-card">
+        <div class="section-header compact"><h2>Статистика игрока</h2></div>
+        <div class="player-stat-grid">
+          ${statCard('Игр', stats.games || 0)}
+          ${statCard('Минут на площадках', formatNumber(stats.minutesOnVenues || totalMinutes))}
+          ${statCard('Победы', stats.wins || 0)}
+          ${statCard('Любимый спорт', stats.favoriteSport || 'Футбол')}
+          ${statCard('Любимая площадка', stats.favoriteVenue || 'Арена Лужники')}
+          ${statCard('Бронирования', stats.bookings || 0)}
         </div>
       </section>
     </div>
   `;
 }
 
-function renderProfileScreen({ state, teams, joinedGames }) {
+function renderProfileScreen({ state, teams, joinedGames, favoriteVenues = [], favoriteGames = [] }) {
+  const history = state.profile.history || {};
   return `
     <div class="screen-stack">
       ${renderProfileCard(state.profile)}
-      <section class="section-card">
-        <div class="section-header"><h2>Мои игры</h2></div>
-        ${joinedGames.length ? joinedGames.map(renderGameRow).join('') : emptyState('Вы пока не участвуете в играх', 'Найдите игру рядом или создайте свою.', 'Найти игру', 'nav', 'games')}
+      <section class="favorites-section">
+        <div class="section-header compact"><h2>Сохраненные площадки</h2><span class="result-label">${favoriteVenues.length}</span></div>
+        <div class="favorites-strip">
+          ${favoriteVenues.length ? favoriteVenues.map(renderFavoriteVenueTile).join('') : emptyState('Площадок пока нет', 'Сохраняйте площадки из каталога, чтобы они появлялись в профиле.')}
+        </div>
       </section>
       <section class="section-card">
-        <div class="section-header"><h2>Мои команды</h2></div>
-        <div class="mini-team-list">
+        <div class="section-header compact"><h2>Избранные игры</h2><span class="result-label">${favoriteGames.length}</span></div>
+        ${favoriteGames.length ? `<div class="profile-scroll-row">${favoriteGames.map(renderProfileGameTile).join('')}</div>` : emptyState('Избранных игр пока нет', 'Сохраняйте игры из ленты, чтобы вернуться к ним позже.')}
+      </section>
+      <section class="section-card">
+        <div class="section-header"><h2>Мои игры</h2></div>
+        ${joinedGames.length ? `<div class="profile-scroll-row">${joinedGames.map(renderProfileGameTile).join('')}</div>` : emptyState('Вы пока не участвуете в играх', 'Найдите игру рядом или создайте свою.', 'Найти игру', 'nav', 'games')}
+      </section>
+      <section class="section-card">
+        <div class="section-header">
+          <h2>Мои команды</h2>
+          <button class="small-action" type="button" data-action="create-team">Создать</button>
+        </div>
+        <div class="mini-team-list profile-scroll-row">
           ${teams.length ? teams.map((team) => renderTeamCard(team, true)).join('') : emptyState('Команд пока нет', 'Создайте команду и пригласите игроков.', 'Создать команду', 'create-team')}
         </div>
       </section>
       <section class="section-card">
-        <div class="section-header"><h2>Любимые виды спорта</h2></div>
-        <div class="chip-scroll wrap">
-          ${state.profile.sports.map((sport) => chip({ label: `${sport.type} · ${sport.level}`, active: true, action: 'remove-sport', value: sport.type })).join('')}
-          ${chip({ label: 'Добавить', action: 'add-sport' })}
+        <div class="section-header"><h2>История</h2></div>
+        <div class="profile-history-grid">
+          ${renderHistoryColumn('История игр', history.games || [])}
+          ${renderHistoryColumn('История бронирований', history.bookings || [])}
+        </div>
+      </section>
+      <section class="section-card">
+        <div class="section-header"><h2>Настройки</h2></div>
+        <div class="settings-list">
+          ${['Аккаунт', 'Уведомления', 'Конфиденциальность', 'Поддержка'].map((item) => `
+            <button class="settings-row" type="button" data-action="${item === 'Уведомления' ? 'open-notifications' : 'profile-detail'}">
+              <span>${escapeHtml(item)}</span>
+              <img src="./icons/стрелка.png" alt="" aria-hidden="true">
+            </button>
+          `).join('')}
         </div>
       </section>
     </div>
@@ -1209,6 +1556,60 @@ function renderTeamScreen({ state, team }) {
   `;
 }
 
+function renderQuickAction(item) {
+  const dataValue = item.value ? ` data-value="${escapeHtml(item.value)}"` : '';
+  return `
+    <button class="quick-action-card card-affordance" type="button" data-action="${escapeHtml(item.action)}"${dataValue}>
+      <span><img src="${escapeHtml(item.icon)}" alt="" aria-hidden="true"></span>
+      <strong>${escapeHtml(item.title)}</strong>
+      <small>${escapeHtml(item.text)}</small>
+    </button>
+  `;
+}
+
+function renderActivityCard(item) {
+  const id = item.id ? ` data-id="${escapeHtml(item.id)}"` : '';
+  return `
+    <button class="activity-card card-affordance" type="button" data-action="${escapeHtml(item.action)}"${id}>
+      <span>${escapeHtml(item.label)}</span>
+      <strong>${escapeHtml(item.title)}</strong>
+      <small>${escapeHtml(item.meta)}</small>
+    </button>
+  `;
+}
+
+function renderDailyTask(task) {
+  return `
+    <article class="daily-task-card">
+      <div>
+        <strong>${escapeHtml(task.title)}</strong>
+        <p>${escapeHtml(task.text)}</p>
+      </div>
+      <span>+${formatNumber(task.reward)} SCORE</span>
+      ${progressBar(task.progress || 0, 100, 'Прогресс задания')}
+    </article>
+  `;
+}
+
+function renderNewsCard(item) {
+  return `
+    <article class="news-card">
+      <span>${escapeHtml(item.type)}</span>
+      <strong>${escapeHtml(item.title)}</strong>
+      <p>${escapeHtml(item.text)}</p>
+    </article>
+  `;
+}
+
+function renderHistoryColumn(title, items) {
+  return `
+    <div class="history-column">
+      <strong>${escapeHtml(title)}</strong>
+      ${items.length ? items.map((item) => `<span>${escapeHtml(item)}</span>`).join('') : '<span>Пока пусто</span>'}
+    </div>
+  `;
+}
+
 function renderMapPreview(games) {
   const pins = games.slice(0, 8).map((game, index) => `<span style="--x:${18 + (index * 11) % 62}%;--y:${24 + (index * 17) % 52}%">${game.price ? `${game.price} ₽` : '0 ₽'}</span>`).join('');
   return `
@@ -1219,12 +1620,47 @@ function renderMapPreview(games) {
   `;
 }
 
+function renderVenueMapPreview(venues) {
+  const pins = venues.slice(0, 8).map((venue, index) => `<span style="--x:${16 + (index * 13) % 64}%;--y:${20 + (index * 19) % 56}%">${venue.price === 0 ? 'Free' : `${formatNumber(venue.price)} ₽`}</span>`).join('');
+  return `
+    <section class="map-preview venue-map-preview">
+      ${pins}
+      <strong>Площадки рядом</strong>
+    </section>
+  `;
+}
+
 function allGameFiltersOff(filters) {
-  return !filters.today && !filters.free && !filters.coach && !filters.nearby && !filters.favorite;
+  return !filters.today
+    && !filters.free
+    && !filters.coach
+    && !filters.nearby
+    && !filters.favorite
+    && filters.sport === 'Все'
+    && filters.date === 'any'
+    && filters.time === 'any'
+    && filters.distance === 'any'
+    && filters.level === 'Все'
+    && filters.price === 'any'
+    && filters.slots === 'any';
 }
 
 function allVenueFiltersOff(filters) {
-  return !filters.free && !filters.favorite && !filters.indoor && !filters.open && !filters.isNew && filters.sport === 'Все' && filters.price === 'any' && filters.location === 'Все' && filters.amenity === 'Все';
+  return !filters.free
+    && !filters.favorite
+    && !filters.indoor
+    && !filters.open
+    && !filters.isNew
+    && filters.sport === 'Все'
+    && filters.price === 'any'
+    && filters.location === 'Все'
+    && filters.amenity === 'Все'
+    && filters.distance === 'any'
+    && filters.surface === 'Все'
+    && filters.lighting === 'any'
+    && filters.size === 'Все'
+    && filters.rating === 'any'
+    && filters.paid === 'any';
 }
 
 function renderMiniGameTile(game) {
@@ -1252,12 +1688,41 @@ function renderFavoriteVenueTile(venue) {
   `;
 }
 
-function renderFavoriteGameTile(game) {
+function renderPeriodStat(label, gamesCount, points, minutes) {
   return `
-    <button class="favorite-tile" type="button" data-action="game-detail" data-id="${game.id}">
-      <img src="${game.image}" alt="">
+    <article class="period-stat-card">
+      <span>${escapeHtml(label)}</span>
+      <strong>${formatNumber(gamesCount)}</strong>
+      <small>игр сыграно</small>
+      <div>
+        <b>${formatNumber(points)}</b><small>очков</small>
+      </div>
+      <div>
+        <b>${formatNumber(minutes)}</b><small>минут</small>
+      </div>
+    </article>
+  `;
+}
+
+function renderAchievement(item) {
+  return `
+    <article class="progress-achievement-card ${item.unlocked ? 'is-earned' : ''}">
+      <div>
+        <span>${escapeHtml(item.icon || '🏆')}</span>
+        <small>${escapeHtml(item.unlocked ? `${item.rarity || 'Получено'} · ${item.date || 'сегодня'}` : item.status || 'Достижение')}</small>
+      </div>
+      <strong>${escapeHtml(item.title)}</strong>
+      <p>${escapeHtml(item.text)}</p>
+      <i><b style="width:${Math.max(0, Math.min(100, Number(item.progress || 0)))}%"></b></i>
+    </article>
+  `;
+}
+
+function renderProfileGameTile(game) {
+  return `
+    <button class="profile-game-tile" type="button" data-action="game-detail" data-id="${game.id}">
       <span>${game.isNew ? 'Набор' : 'Матч'}</span>
-      <strong>${escapeHtml(game.sport)}</strong>
+      <strong>${escapeHtml(game.title)}</strong>
       <small>${formatGameDate(game)}</small>
       <small>${escapeHtml(game.place)}</small>
       <b>${game.current} из ${game.max}</b>
@@ -1284,10 +1749,10 @@ const LOGIN = 'SCORE';
 const PASSWORD = 'SCORE123';
 
 const screenTitles = {
-  home: 'План',
+  home: 'Главная',
   venues: 'Площадки',
   games: 'Игры',
-  favorites: 'Избранное',
+  progress: 'Прогресс',
   team: 'Команда',
   profile: 'Профиль'
 };
@@ -1336,26 +1801,49 @@ function hydrateState() {
   const fallback = {
     authorized: false,
     activeScreen: 'home',
-      profile: clone(defaultProfile),
-      notifications: clone(notifications),
-      venues: clone(venues),
-      games: games.map(withGameDate),
-      teams: clone(teams),
-      selectedTeamId: 't1',
-      filters: {
+    profile: clone(defaultProfile),
+    notifications: clone(notifications),
+    home: clone(homeMvp),
+    venues: clone(venues),
+    games: games.map(withGameDate),
+    teams: clone(teams),
+    selectedTeamId: 't1',
+    filters: {
       venues: {
         query: '',
         sport: 'Все',
         price: 'any',
         location: 'Все',
         amenity: 'Все',
+        distance: 'any',
+        surface: 'Все',
+        lighting: 'any',
+        size: 'Все',
+        rating: 'any',
+        paid: 'any',
+        view: 'list',
         free: false,
         favorite: false,
         indoor: false,
         open: false,
         isNew: false
       },
-      games: { query: '', sport: 'Все', today: false, free: false, coach: false, nearby: false, favorite: false, view: 'list' }
+      games: {
+        query: '',
+        sport: 'Все',
+        date: 'any',
+        time: 'any',
+        distance: 'any',
+        level: 'Все',
+        price: 'any',
+        slots: 'any',
+        today: false,
+        free: false,
+        coach: false,
+        nearby: false,
+        favorite: false,
+        view: 'list'
+      }
     }
   };
 
@@ -1365,8 +1853,10 @@ function hydrateState() {
     return {
       ...fallback,
       ...saved,
+      activeScreen: saved.activeScreen === 'favorites' ? 'progress' : saved.activeScreen,
       profile: mergeProfile(saved.profile),
       notifications: Array.isArray(saved.notifications) ? saved.notifications : fallback.notifications,
+      home: { ...fallback.home, ...(saved.home || {}) },
       venues: mergeById(fallback.venues, saved.venues),
       games: mergeById(fallback.games, saved.games).map(withGameDate),
       teams: mergeById(fallback.teams, saved.teams),
@@ -1378,6 +1868,13 @@ function hydrateState() {
 }
 
 function mergeProfile(profile = {}) {
+  const mergedStats = {
+    ...clone(defaultProfile.stats),
+    ...(profile.stats || {}),
+    week: { ...defaultProfile.stats.week, ...((profile.stats || {}).week || {}) },
+    month: { ...defaultProfile.stats.month, ...((profile.stats || {}).month || {}) }
+  };
+  const savedAchievements = Array.isArray(profile.achievements) ? profile.achievements : [];
   return {
     ...clone(defaultProfile),
     ...profile,
@@ -1387,8 +1884,13 @@ function mergeProfile(profile = {}) {
     social: String(profile.social || defaultProfile.social || ''),
     avatarDataUrl: String(profile.avatarDataUrl || ''),
     preferences: { ...defaultProfile.preferences, ...(profile.preferences || {}) },
-    stats: { ...defaultProfile.stats, ...(profile.stats || {}) },
-    sports: Array.isArray(profile.sports) ? profile.sports : clone(defaultProfile.sports)
+    stats: mergedStats,
+    sports: Array.isArray(profile.sports) ? profile.sports : clone(defaultProfile.sports),
+    achievements: (defaultProfile.achievements || []).map((item) => ({
+      ...item,
+      ...(savedAchievements.find((saved) => saved.title === item.title) || {})
+    })),
+    history: { ...clone(defaultProfile.history || {}), ...(profile.history || {}) }
   };
 }
 
@@ -1443,6 +1945,7 @@ function bindGlobalEvents() {
   document.addEventListener('click', handleClick);
   document.addEventListener('input', handleInput);
   document.addEventListener('change', handleChange);
+  dom.sheetContent?.addEventListener('scroll', updateProfileStickyTitle, { passive: true });
   document.querySelectorAll('[data-close-sheet]').forEach((button) => button.addEventListener('click', closeSheet));
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeSheet();
@@ -1471,6 +1974,13 @@ function handleClick(event) {
   if (actionName === 'game-filter') toggleFilter('games', value);
   if (actionName === 'venue-filter') toggleFilter('venues', value);
   if (actionName === 'game-view') state.filters.games.view = value || 'list';
+  if (actionName === 'venue-view') state.filters.venues.view = value || 'list';
+  if (actionName === 'find-game') navigate('games');
+  if (actionName === 'find-venue') navigate('venues');
+  if (actionName === 'book-venue') navigate('venues');
+  if (actionName === 'invite-friends') showToast('Ссылка приглашения подготовлена');
+  if (actionName === 'book-selected-venue') showToast('Окно бронирования подготовлено');
+  if (actionName === 'open-game-chat') showToast('Чат игры будет доступен после подключения backend');
   if (actionName === 'create-game') openCreateGameSheet();
   if (actionName === 'open-notifications') openNotificationsSheet();
   if (actionName === 'save-game') saveGameFromSheet(action);
@@ -1488,7 +1998,7 @@ function handleClick(event) {
   if (actionName === 'view-avatar') openSheet(avatarViewSheet(state.profile));
   if (actionName === 'change-avatar') openSheet(avatarChangeSheet(state.profile));
   if (actionName === 'select-avatar') selectProfileAvatar(value);
-  if (actionName === 'edit-profile') openSheet(profileEditSheet(state.profile));
+  if (actionName === 'edit-profile') openSheet(profileDetailSheet(state.profile, true));
   if (actionName === 'save-profile') saveProfileFromSheet();
   if (actionName === 'add-sport') addProfileSport();
   if (actionName === 'remove-sport') removeProfileSport(value);
@@ -1563,6 +2073,7 @@ function logout() {
 }
 
 function navigate(screen) {
+  if (screen === 'favorites') screen = 'progress';
   if (!screenTitles[screen]) return;
   state.activeScreen = screen;
   saveState();
@@ -1579,7 +2090,7 @@ function renderApp() {
   renderHomeOnly();
   renderVenuesOnly();
   renderGamesOnly();
-  renderFavoritesOnly();
+  renderProgressOnly();
   renderTeamOnly();
   renderProfileOnly();
 }
@@ -1587,18 +2098,17 @@ function renderApp() {
 function renderHomeOnly() {
   const screen = document.querySelector('#screen-home');
   const nextGame = state.games.find((game) => game.joined) || state.games[0];
-  screen.innerHTML = renderHome({ state, nextGame });
+  screen.innerHTML = renderHome({ state, nextGame, home: state.home });
 }
 
 function renderGamesOnly() {
   document.querySelector('#screen-games').innerHTML = renderGamesScreen({ state, games: getFilteredGames() });
 }
 
-function renderFavoritesOnly() {
-  document.querySelector('#screen-favorites').innerHTML = renderFavoritesScreen({
+function renderProgressOnly() {
+  document.querySelector('#screen-progress').innerHTML = renderProgressScreen({
     state,
-    games: state.games.filter((game) => game.favorite),
-    venues: state.venues.filter((venue) => venue.favorite)
+    joinedGames: state.games.filter((game) => game.joined)
   });
 }
 
@@ -1614,7 +2124,9 @@ function renderProfileOnly() {
   document.querySelector('#screen-profile').innerHTML = renderProfileScreen({
     state,
     teams: state.teams,
-    joinedGames: state.games.filter((game) => game.joined)
+    joinedGames: state.games.filter((game) => game.joined),
+    favoriteVenues: state.venues.filter((venue) => venue.favorite),
+    favoriteGames: state.games.filter((game) => game.favorite)
   });
 }
 
@@ -1625,6 +2137,16 @@ function getFilteredGames() {
     .filter((game) => {
       if (query && !normalize([game.title, game.sport, game.place, game.metro, game.district].join(' ')).includes(query)) return false;
       if (filters.sport !== 'Все' && game.sport !== filters.sport) return false;
+      if (filters.date === 'today' && game.dateOffset !== 0) return false;
+      if (filters.date === 'week' && game.dateOffset > 7) return false;
+      if (filters.time === 'morning' && Number(game.time.slice(0, 2)) >= 12) return false;
+      if (filters.time === 'evening' && Number(game.time.slice(0, 2)) < 18) return false;
+      if (filters.distance === 'near' && parseDistance(game.distance) > 2) return false;
+      if (filters.distance === 'five' && parseDistance(game.distance) > 5) return false;
+      if (filters.level !== 'Все' && game.level !== filters.level) return false;
+      if (filters.price === 'free' && game.price > 0) return false;
+      if (filters.price === 'paid' && game.price === 0) return false;
+      if (filters.slots === 'open' && game.current >= game.max) return false;
       if (filters.today && game.dateOffset !== 0) return false;
       if (filters.free && game.price > 0) return false;
       if (filters.coach && !game.coach) return false;
@@ -1644,6 +2166,15 @@ function getFilteredVenues() {
     if (filters.price === 'free' && venue.price > 0) return false;
     if (filters.price === 'low' && venue.price > 2500) return false;
     if (filters.price === 'mid' && (venue.price < 2500 || venue.price > 5000)) return false;
+    if (filters.price === 'paid' && venue.price === 0) return false;
+    if (filters.distance === 'near' && parseDistance(venue.distance) > 2) return false;
+    if (filters.distance === 'five' && parseDistance(venue.distance) > 5) return false;
+    if (filters.surface !== 'Все' && venue.surface !== filters.surface) return false;
+    if (filters.lighting === 'yes' && !(venue.amenities || []).includes('Освещение')) return false;
+    if (filters.size !== 'Все' && venue.size !== filters.size) return false;
+    if (filters.rating === 'high' && Number(venue.rating || 0) < 4.7) return false;
+    if (filters.paid === 'free' && venue.price > 0) return false;
+    if (filters.paid === 'paid' && venue.price === 0) return false;
     if (filters.location !== 'Все' && venue.district !== filters.location && venue.metro !== filters.location) return false;
     if (filters.amenity !== 'Все' && !venue.amenities.includes(filters.amenity)) return false;
     if (filters.isNew && venue.label !== 'Новая') return false;
@@ -1653,6 +2184,10 @@ function getFilteredVenues() {
     if (filters.open && venue.indoor) return false;
     return true;
   });
+}
+
+function parseDistance(value = '') {
+  return Number(String(value).replace(',', '.').match(/\d+(\.\d+)?/)?.[0] || 99);
 }
 
 function toggleFilter(scope, value) {
@@ -1666,6 +2201,16 @@ function toggleFilter(scope, value) {
       if (key === 'price') filters[key] = 'any';
       if (key === 'location') filters[key] = 'Все';
       if (key === 'amenity') filters[key] = 'Все';
+      if (key === 'distance') filters[key] = 'any';
+      if (key === 'surface') filters[key] = 'Все';
+      if (key === 'lighting') filters[key] = 'any';
+      if (key === 'size') filters[key] = 'Все';
+      if (key === 'rating') filters[key] = 'any';
+      if (key === 'paid') filters[key] = 'any';
+      if (key === 'date') filters[key] = 'any';
+      if (key === 'time') filters[key] = 'any';
+      if (key === 'level') filters[key] = 'Все';
+      if (key === 'slots') filters[key] = 'any';
     });
     return;
   }
@@ -1674,6 +2219,19 @@ function toggleFilter(scope, value) {
   if (scope === 'venues' && value?.startsWith('price:')) filters.price = filters.price === value.slice(6) ? 'any' : value.slice(6);
   if (scope === 'venues' && value?.startsWith('location:')) filters.location = filters.location === value.slice(9) ? 'Все' : value.slice(9);
   if (scope === 'venues' && value?.startsWith('amenity:')) filters.amenity = filters.amenity === value.slice(8) ? 'Все' : value.slice(8);
+  if (scope === 'venues' && value?.startsWith('distance:')) filters.distance = filters.distance === value.slice(9) ? 'any' : value.slice(9);
+  if (scope === 'venues' && value?.startsWith('surface:')) filters.surface = filters.surface === value.slice(8) ? 'Все' : value.slice(8);
+  if (scope === 'venues' && value?.startsWith('lighting:')) filters.lighting = filters.lighting === value.slice(9) ? 'any' : value.slice(9);
+  if (scope === 'venues' && value?.startsWith('size:')) filters.size = filters.size === value.slice(5) ? 'Все' : value.slice(5);
+  if (scope === 'venues' && value?.startsWith('rating:')) filters.rating = filters.rating === value.slice(7) ? 'any' : value.slice(7);
+  if (scope === 'venues' && value?.startsWith('paid:')) filters.paid = filters.paid === value.slice(5) ? 'any' : value.slice(5);
+  if (scope === 'games' && value?.startsWith('sport:')) filters.sport = filters.sport === value.slice(6) ? 'Все' : value.slice(6);
+  if (scope === 'games' && value?.startsWith('date:')) filters.date = filters.date === value.slice(5) ? 'any' : value.slice(5);
+  if (scope === 'games' && value?.startsWith('time:')) filters.time = filters.time === value.slice(5) ? 'any' : value.slice(5);
+  if (scope === 'games' && value?.startsWith('distance:')) filters.distance = filters.distance === value.slice(9) ? 'any' : value.slice(9);
+  if (scope === 'games' && value?.startsWith('level:')) filters.level = filters.level === value.slice(6) ? 'Все' : value.slice(6);
+  if (scope === 'games' && value?.startsWith('price:')) filters.price = filters.price === value.slice(6) ? 'any' : value.slice(6);
+  if (scope === 'games' && value?.startsWith('slots:')) filters.slots = filters.slots === value.slice(6) ? 'any' : value.slice(6);
 }
 
 function openCreateGameSheet() {
@@ -1815,9 +2373,6 @@ async function saveProfileFromSheet() {
   state.profile.email = String(data.get('email') || state.profile.email || '').trim();
   state.profile.social = String(data.get('social') || state.profile.social || '').trim();
   state.profile.about = String(data.get('about') || state.profile.about).trim();
-  state.profile.goal = String(data.get('goal') || state.profile.goal);
-  state.profile.level = String(data.get('level') || state.profile.level);
-  state.profile.stepGoal = clamp(data.get('stepGoal'), 4000, 20000);
   if (avatarFile instanceof File && avatarFile.size > 0) {
     try {
       state.profile.avatarDataUrl = await readImageFile(avatarFile);
@@ -1828,8 +2383,14 @@ async function saveProfileFromSheet() {
   }
   saveState();
   renderApp();
-  closeSheet();
+  openSheet(profileDetailSheet(state.profile));
   showToast('Профиль обновлен');
+}
+
+function updateProfileStickyTitle() {
+  const title = dom.sheetContent?.querySelector('[data-profile-sticky-title]');
+  if (!title) return;
+  title.classList.toggle('is-visible', dom.sheetContent.scrollTop > 96);
 }
 
 function shareProfile() {
@@ -1936,6 +2497,8 @@ function toggleJoinGame(id) {
 
 function openSheet(markup) {
   dom.sheetContent.innerHTML = markup;
+  dom.sheetContent.scrollTop = 0;
+  updateProfileStickyTitle();
   dom.sheet.hidden = false;
   dom.sheet.setAttribute('aria-hidden', 'false');
   document.body.classList.add('has-open-sheet');

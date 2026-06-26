@@ -24,6 +24,7 @@ export function renderGameCard(game) {
         <div class="card-meta-row">
           <span>${escapeHtml(game.district)}</span>
           <span>м. ${escapeHtml(game.metro)}</span>
+          <span>${escapeHtml(game.distance || 'рядом')}</span>
         </div>
         <div class="chip-line">
           <span>${escapeHtml(game.sport)}</span>
@@ -31,6 +32,11 @@ export function renderGameCard(game) {
           <span>${game.current}/${game.max}</span>
           ${game.coach ? '<span>С тренером</span>' : ''}
           ${game.nearby ? '<span>Рядом</span>' : ''}
+        </div>
+        <div class="card-meta-row">
+          <span>${(game.players || []).slice(0, 3).map(escapeHtml).join(', ')}${(game.players || []).length > 3 ? ' +' + ((game.players || []).length - 3) : ''}</span>
+          <span>Чат ${game.chat || 0}</span>
+          <span>Комментарии ${game.comments || 0}</span>
         </div>
         <div class="card-fill">
           <div><span>Набор игроков</span><strong>${game.current}/${game.max}</strong></div>
@@ -67,10 +73,14 @@ export function renderVenueCard(venue) {
         <div class="card-meta-row">
           <span>${escapeHtml(venue.address)}</span>
           <span>★ ${venue.rating}</span>
+          <span>${escapeHtml(venue.distance || 'рядом')}</span>
         </div>
         <div class="chip-line">
           <span>${escapeHtml(venue.sport)}</span>
           <span>${venue.indoor ? 'В помещении' : 'Открытая'}</span>
+          <span>${escapeHtml(venue.freeTime || 'Свободное время')}</span>
+          <span>${escapeHtml(venue.surface || 'Покрытие')}</span>
+          <span>${escapeHtml(venue.size || 'Размер')}</span>
           ${(venue.amenities || []).slice(0, 2).map((item) => `<span>${escapeHtml(item)}</span>`).join('')}
         </div>
       </div>
@@ -81,14 +91,19 @@ export function renderVenueCard(venue) {
 export function renderProfileCard(profile) {
   const nickname = profile.nickname || '#77777';
   const primarySport = profile.sports?.[0]?.type || 'Спорт';
+  const nameParts = String(profile.name || '').trim().split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || profile.name || 'Игрок';
+  const lastName = nameParts.slice(1).join(' ');
   return `
     <article class="profile-card profile-hero card-affordance" role="button" tabindex="0" data-action="profile-detail">
       <div class="profile-head">
         <img src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
         <div class="profile-title">
-          <span class="profile-status">Профиль игрока</span>
-          <h2>${escapeHtml(profile.name)}</h2>
-          <p>${escapeHtml(nickname)} · ${escapeHtml(profile.city || 'Москва')}</p>
+          <p>${escapeHtml(nickname)}</p>
+          <h2>
+            <span>${escapeHtml(firstName)}</span>
+            ${lastName ? `<span>${escapeHtml(lastName)}</span>` : ''}
+          </h2>
         </div>
       </div>
       <div class="profile-identity-row">
