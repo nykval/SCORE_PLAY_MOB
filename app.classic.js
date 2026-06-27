@@ -1903,6 +1903,8 @@ const dom = {
 };
 
 const state = hydrateState();
+const SHEET_CLOSE_ANIMATION_MS = 320;
+let sheetCloseTimer = 0;
 
 init();
 
@@ -2404,10 +2406,12 @@ async function createAchievementShareFile(achievement) {
   const canvas = document.createElement('canvas');
   const width = 1080;
   const height = 1350;
-  canvas.width = width;
-  canvas.height = height;
+  const scale = 2;
+  canvas.width = width * scale;
+  canvas.height = height * scale;
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
+  ctx.scale(scale, scale);
 
   const isGamesSeries = achievement.series === 'Игры';
   const logoSrc = isGamesSeries ? './icons/logo-green.png' : './icons/logo-blue.png';
@@ -2438,7 +2442,16 @@ async function createAchievementShareFile(achievement) {
   const descriptionLines = getWrappedLines(ctx, achievement.text, 820).slice(0, 2);
   drawCenteredLines(ctx, descriptionLines, width / 2, 620 + titleLines.length * 82 + 34, 50);
 
-  if (logo) drawContainedImage(ctx, logo, 420, 1124, 240);
+  ctx.fillStyle = '#3A85FD';
+  ctx.font = '800 34px Manrope, Arial, sans-serif';
+  const inviteLines = getWrappedLines(ctx, 'Залетай в SCORE: найди игру рядом и открой свои достижения', 760).slice(0, 2);
+  drawCenteredLines(ctx, inviteLines, width / 2, 972, 44);
+
+  ctx.fillStyle = '#5D6F94';
+  ctx.font = '700 26px Manrope, Arial, sans-serif';
+  ctx.fillText(getAppShareUrl(), width / 2, 1064);
+
+  if (logo) drawContainedImage(ctx, logo, 420, 1150, 240);
 
   const blob = await canvasToBlob(canvas);
   if (!blob) return null;
@@ -2464,7 +2477,7 @@ async function shareAchievement(id) {
     try {
       const file = await createAchievementShareFile(achievement);
       if (file && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-        await navigator.share({ files: [file], title: payload.title, text: payload.text });
+        await navigator.share({ files: [file], title: payload.title });
         return;
       }
     } catch (_) {}
@@ -2853,22 +2866,42 @@ function toggleJoinGame(id) {
 }
 
 function openSheet(markup) {
+  clearTimeout(sheetCloseTimer);
   dom.sheetContent.innerHTML = markup;
   dom.sheetContent.scrollTop = 0;
   dom.sheetPanel?.classList.toggle('is-achievement-sheet', markup.includes('achievement-detail-sheet'));
   updateProfileStickyTitle();
   dom.sheet.hidden = false;
   dom.sheet.setAttribute('aria-hidden', 'false');
+  dom.sheet.classList.remove('is-open', 'is-closing', 'is-dragging');
   document.body.classList.add('has-open-sheet');
-  if (dom.sheetPanel) dom.sheetPanel.style.transform = '';
+  if (dom.sheetPanel) {
+    dom.sheetPanel.style.transform = 'translate3d(0, 105%, 0)';
+  }
+  dom.sheet.offsetHeight;
+  requestAnimationFrame(() => {
+    dom.sheet.classList.add('is-open');
+    if (dom.sheetPanel) dom.sheetPanel.style.transform = '';
+  });
 }
 
 function closeSheet() {
-  dom.sheet.hidden = true;
+  if (!dom.sheet || dom.sheet.hidden || dom.sheet.classList.contains('is-closing')) return;
+  clearTimeout(sheetCloseTimer);
   dom.sheet.setAttribute('aria-hidden', 'true');
-  dom.sheetContent.innerHTML = '';
-  dom.sheetPanel?.classList.remove('is-achievement-sheet');
-  document.body.classList.remove('has-open-sheet');
+  dom.sheet.classList.remove('is-open', 'is-dragging');
+  dom.sheet.classList.add('is-closing');
+  if (dom.sheetPanel) {
+    dom.sheetPanel.style.transform = 'translate3d(0, 105%, 0)';
+  }
+  sheetCloseTimer = setTimeout(() => {
+    dom.sheet.hidden = true;
+    dom.sheet.classList.remove('is-closing');
+    dom.sheetContent.innerHTML = '';
+    dom.sheetPanel?.classList.remove('is-achievement-sheet');
+    if (dom.sheetPanel) dom.sheetPanel.style.transform = '';
+    document.body.classList.remove('has-open-sheet');
+  }, SHEET_CLOSE_ANIMATION_MS);
 }
 
 function showToast(message) {
@@ -2893,33 +2926,49 @@ function bindSheetDrag() {
   if (!dom.sheetPanel) return;
   let startY = 0;
   let currentY = 0;
+  let lastY = 0;
+  let lastTime = 0;
+  let velocity = 0;
   let dragging = false;
 
   dom.sheetPanel.addEventListener('pointerdown', (event) => {
+    if (dom.sheet?.classList.contains('is-closing')) return;
     if (event.target.closest('input, textarea, select, button')) return;
     const rect = dom.sheetPanel.getBoundingClientRect();
     if (!event.target.closest('.sheet-handle') && event.clientY - rect.top > 72) return;
     startY = event.clientY;
     currentY = 0;
+    lastY = event.clientY;
+    lastTime = performance.now();
+    velocity = 0;
     dragging = true;
+    dom.sheet?.classList.add('is-dragging');
     dom.sheetPanel.setPointerCapture(event.pointerId);
   });
 
   dom.sheetPanel.addEventListener('pointermove', (event) => {
     if (!dragging) return;
+    const now = performance.now();
     currentY = Math.max(0, event.clientY - startY);
-    dom.sheetPanel.style.transform = `translateY(${currentY}px)`;
+    velocity = (event.clientY - lastY) / Math.max(1, now - lastTime);
+    lastY = event.clientY;
+    lastTime = now;
+    dom.sheetPanel.style.transform = `translate3d(0, ${currentY}px, 0)`;
   });
 
-  dom.sheetPanel.addEventListener('pointerup', () => {
+  function finishDrag() {
     if (!dragging) return;
     dragging = false;
-    if (currentY > 92) {
+    dom.sheet?.classList.remove('is-dragging');
+    if (currentY > 92 || (currentY > 36 && velocity > 0.7)) {
       closeSheet();
       return;
     }
     dom.sheetPanel.style.transform = '';
-  });
+  }
+
+  dom.sheetPanel.addEventListener('pointerup', finishDrag);
+  dom.sheetPanel.addEventListener('pointercancel', finishDrag);
 }
 
 function clone(value) {
