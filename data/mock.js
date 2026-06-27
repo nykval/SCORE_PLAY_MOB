@@ -54,10 +54,149 @@ export const defaultProfile = {
     }
   },
   achievements: [
-    { title: '50 игр', text: 'Осталось 3 игры до отметки', progress: 94, icon: '⚽', status: 'Почти готово', rarity: 'Редкое', date: '', unlocked: false },
-    { title: 'Футбольный мастер', text: '25 матчей по футболу в SCORE', progress: 100, icon: '🏆', status: 'Получено', rarity: 'Эпическое', date: '12 июн.', unlocked: true },
-    { title: 'Командный игрок', text: '10 командных матчей без пропусков', progress: 100, icon: '🤝', status: 'Получено', rarity: 'Редкое', date: '4 июн.', unlocked: true },
-    { title: '100 игр', text: 'Большая сезонная цель', progress: 47, icon: '🔥', status: 'Цель', rarity: 'Легендарное', date: '', unlocked: false }
+    {
+      id: 'start-welcome',
+      series: 'Старт',
+      title: 'Добро пожаловать в игру',
+      text: 'Создать аккаунт',
+      detail: 'Первый шаг сделан: профиль SCORE создан, а значит можно искать игры, площадки и команду',
+      progress: 100,
+      icon: './icons/achievements/1.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-profile',
+      series: 'Старт',
+      title: 'Первый контракт',
+      text: 'Полностью заполнить профиль',
+      detail: 'Профиль заполнен: игрокам проще понять ваш уровень, город и спортивные интересы',
+      progress: 100,
+      icon: './icons/achievements/2.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-colors',
+      series: 'Старт',
+      title: 'Под своими цветами',
+      text: 'Выбрать любимый вид спорта',
+      detail: 'Любимый спорт выбран. SCORE будет точнее подбирать игры, площадки и задания',
+      progress: 100,
+      icon: './icons/achievements/3.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-first-game',
+      series: 'Старт',
+      title: 'Первый выход на поле',
+      text: 'Сыграть первую игру',
+      detail: 'Первая игра засчитана. Теперь начинается история ваших матчей и прогресса в SCORE',
+      progress: 100,
+      icon: './icons/achievements/4.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-home',
+      series: 'Старт',
+      title: 'Здесь мой дом',
+      text: 'Добавить первую площадку в избранное',
+      detail: 'Любимая площадка сохранена, чтобы быстрее возвращаться к бронированию и играм',
+      progress: 100,
+      icon: './icons/achievements/5.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'games-warmup',
+      series: 'Игры',
+      title: 'Разминка',
+      text: 'Сыграть 3 игры',
+      detail: 'Три игры сыграны: SCORE уже видит ваш ритм и спортивную активность',
+      progress: 100,
+      icon: './icons/achievements/6.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'games-regular',
+      series: 'Игры',
+      title: 'Постоянный игрок',
+      text: 'Сыграть 10 игр',
+      detail: 'Десять игр за плечами: вы уже не случайный участник, а стабильный игрок',
+      progress: 100,
+      icon: './icons/achievements/7.png',
+      status: 'Получено',
+      rarity: 'Редкая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'games-machine',
+      series: 'Игры',
+      title: 'Машина матчей',
+      text: 'Сыграть 50 игр',
+      detail: 'До отметки 50 игр осталось совсем немного: продолжайте выходить на площадку',
+      progress: 94,
+      icon: './icons/achievements/8.png',
+      status: 'В процессе',
+      rarity: 'Эпическая',
+      date: '',
+      unlocked: false
+    },
+    {
+      id: 'games-legend',
+      series: 'Игры',
+      title: 'Легенда SCORE',
+      text: 'Сыграть 100 игр',
+      detail: 'Большая цель сезона: сыграть 100 игр и закрепить статус легенды SCORE',
+      progress: 47,
+      icon: './icons/achievements/9.png',
+      status: 'В процессе',
+      rarity: 'Легендарная',
+      date: '',
+      unlocked: false
+    },
+    {
+      id: 'games-no-subs',
+      series: 'Игры',
+      title: 'Без замен',
+      text: 'Сыграть 10 игр подряд без большого перерыва',
+      detail: 'Серия держится, но для ачивки нужно сыграть 10 игр подряд без большого перерыва',
+      progress: 60,
+      icon: './icons/achievements/10.png',
+      status: 'В процессе',
+      rarity: 'Редкая',
+      date: '',
+      unlocked: false
+    },
+    {
+      id: 'games-habit',
+      series: 'Игры',
+      title: 'Спортивная привычка',
+      text: 'Играть каждую неделю в течение месяца',
+      detail: 'Нужно удержать спортивный ритм: играть каждую неделю в течение месяца',
+      progress: 75,
+      icon: './icons/achievements/11.png',
+      status: 'В процессе',
+      rarity: 'Редкая',
+      date: '',
+      unlocked: false
+    }
   ],
   history: {
     games: ['Вечерний футбол 5×5', 'Баскетбол 3×3 вечером', 'Беговая тренировка'],
@@ -101,12 +240,12 @@ export const homeMvp = {
     gameId: 'g1'
   },
   quickActions: [
-    { title: 'Найти игру', text: 'Подбор рядом', action: 'find-game', icon: './icons/Игры.png' },
-    { title: 'Создать игру', text: 'Собрать игроков', action: 'create-game', icon: './icons/Игры.png' },
-    { title: 'Найти площадку', text: 'Фото, цена, метро', action: 'find-venue', icon: './icons/Площадки.png' },
-    { title: 'Собрать команду', text: 'Состав и заявки', action: 'nav', value: 'team', icon: './icons/Профиль.png' },
-    { title: 'Забронировать', text: 'Свободное время', action: 'book-venue', icon: './icons/Площадки.png' },
-    { title: 'Позвать друзей', text: '+150 SCORE', action: 'invite-friends', icon: './icons/поделиться.png' }
+    { title: 'Найти игру', text: 'Подбор рядом', action: 'find-game', icon: './icons/games.png' },
+    { title: 'Создать игру', text: 'Собрать игроков', action: 'create-game', icon: './icons/games.png' },
+    { title: 'Найти площадку', text: 'Фото, цена, метро', action: 'find-venue', icon: './icons/venues.png' },
+    { title: 'Собрать команду', text: 'Состав и заявки', action: 'nav', value: 'team', icon: './icons/profile.png' },
+    { title: 'Забронировать', text: 'Свободное время', action: 'book-venue', icon: './icons/venues.png' },
+    { title: 'Позвать друзей', text: '+150 SCORE', action: 'invite-friends', icon: './icons/share.png' }
   ],
   activity: [
     { label: 'Следующая игра', title: 'Вечерний футбол 5×5', meta: 'Сегодня · 20:30', action: 'game-detail', id: 'g1' },
@@ -145,7 +284,7 @@ export const venues = [
     label: 'Популярная',
     free: false,
     indoor: false,
-    photo: '../SCORE PLAY/venue-photos/1569331748_90f25b1dd39e8a909b8f28193946be12.jpg',
+    photo: './assets/venues/luzhniki-7x7.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Душ', 'Парковка'],
     schedule: ['19:00 занято', '20:00 занято', '21:00 свободно', '22:00 свободно'],
     description: 'Поле с искусственным покрытием, вечерним светом и быстрым доступом к раздевалкам.'
@@ -168,7 +307,7 @@ export const venues = [
     label: 'Новая',
     free: false,
     indoor: false,
-    photo: '../SCORE PLAY/venue-photos/luch-field-2-1.jpg',
+    photo: './assets/venues/luch-field-2.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Wi-Fi', 'Инвентарь', 'Парковка'],
     schedule: ['18:00 занято', '19:30 свободно', '21:00 свободно'],
     description: 'Большое поле 100×64 для матчей, тренировок и командных сборов.'
@@ -191,7 +330,7 @@ export const venues = [
     label: 'Открытая',
     free: false,
     indoor: false,
-    photo: '../SCORE PLAY/venue-photos/energy-court-1.jpg',
+    photo: './assets/venues/energy-court.jpg',
     amenities: ['Душ', 'Раздевалка', 'Парковка', 'Инвентарь', 'Освещение'],
     schedule: ['18:00 свободно', '20:00 свободно', '21:00 занято'],
     description: 'Открытые корты с тенниситом, освещением и водой рядом с площадкой.'
@@ -214,7 +353,7 @@ export const venues = [
     label: 'В помещении',
     free: false,
     indoor: true,
-    photo: '../SCORE PLAY/venue-photos/dostoevskaya-hall-1.jpg',
+    photo: './assets/venues/dostoevskaya-hall.jpg',
     amenities: ['Зал', 'Раздевалка', 'Инвентарь', 'Тренер', 'Душ'],
     schedule: ['18:30 свободно', '20:30 занято', '22:00 свободно'],
     description: 'Универсальный зал для волейбола и баскетбола с высоким потолком.'
@@ -237,7 +376,7 @@ export const venues = [
     label: 'Популярная',
     free: false,
     indoor: true,
-    photo: '../SCORE PLAY/venue-photos/belka-squash-1.jpg',
+    photo: './assets/venues/belka-squash.jpg',
     amenities: ['Душ', 'Кафе', 'Раздевалка', 'Инвентарь'],
     schedule: ['19:00 занято', '20:00 свободно', '21:00 свободно'],
     description: 'Камерные корты для быстрых игр после работы и персональных тренировок.'
@@ -260,7 +399,7 @@ export const venues = [
     label: 'Открытая',
     free: true,
     indoor: false,
-    photo: '../SCORE PLAY/icons/map-area-base.jpg',
+    photo: './assets/sports/map-area-base.jpg',
     amenities: ['Бесплатно', 'Вода', 'Туалет', 'Парк'],
     schedule: ['07:00 группа', '19:00 группа', 'Любое время'],
     description: 'Точка сбора для беговых тренировок, интервалов и прогулочных групп.'
@@ -294,7 +433,7 @@ export const games = [
     favorite: false,
     joined: true,
     nearby: true,
-    image: '../SCORE PLAY/photo-plays/футбол.svg',
+    image: './assets/sports/football.svg',
     description: 'Комфортный темп, без жесткого контакта. Собираемся за 10 минут до старта.'
   },
   {
@@ -323,7 +462,7 @@ export const games = [
     favorite: true,
     joined: false,
     nearby: false,
-    image: '../SCORE PLAY/photo-plays/баскетбол.svg',
+    image: './assets/sports/basketball.svg',
     description: 'Быстрые смены, игра до 21 очка, хороший свет и мягкое покрытие.'
   },
   {
@@ -352,7 +491,7 @@ export const games = [
     favorite: false,
     joined: false,
     nearby: true,
-    image: '../SCORE PLAY/icons/map-area-base.jpg',
+    image: './assets/sports/map-area-base.jpg',
     description: 'Интервалы, заминка и несколько темповых групп для разного уровня.'
   },
   {
@@ -381,7 +520,7 @@ export const games = [
     favorite: false,
     joined: false,
     nearby: false,
-    image: '../SCORE PLAY/photo-plays/падел.svg',
+    image: './assets/sports/padel.svg',
     description: 'Объясним правила, подберем пару и дадим ракетки на месте.'
   },
   {
@@ -410,7 +549,7 @@ export const games = [
     favorite: false,
     joined: false,
     nearby: false,
-    image: '../SCORE PLAY/photo-plays/воллейбол.svg',
+    image: './assets/sports/volleyball.svg',
     description: 'Средний уровень, играем сетами, ждем игроков на замену.'
   }
 ];

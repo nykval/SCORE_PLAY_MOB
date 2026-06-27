@@ -1,6 +1,6 @@
 import { renderGameCard, renderGameRow, renderMemberRow, renderProfileCard, renderTeamCard, renderTeamEvent, renderVenueCard } from '../components/cards.js';
 import { chip, emptyState, progressBar, searchBar, viewToggle } from '../components/ui.js';
-import { escapeHtml, formatGameDate, formatNumber, formatPrice, uniqueSports } from '../utils/format.js';
+import { escapeAttr, escapeHtml, formatGameDate, formatNumber, formatPrice, uniqueSports } from '../utils/format.js';
 
 export function renderHome({ state, nextGame, home }) {
   const profile = state.profile;
@@ -253,78 +253,11 @@ export function renderVenuesScreen({ state, venues }) {
 }
 
 export function renderProgressScreen({ state, joinedGames }) {
-  const stats = state.profile.stats || {};
-  const week = stats.week || {};
-  const month = stats.month || {};
-  const totalMinutes = Math.max(Number(month.minutes || 0) * 4, Number(stats.games || 0) * 78);
   const achievements = state.profile.achievements || [];
-  const earnedAchievements = achievements.filter((item) => item.unlocked);
-  const progressAchievements = achievements.filter((item) => !item.unlocked);
-  const footballGames = state.games.filter((game) => game.sport === 'Футбол' && game.joined).length || 23;
+  const series = groupAchievements(achievements);
   return `
-    <div class="screen-stack">
-      <section class="progress-hero-card">
-        <div>
-          <span class="eyebrow">SCORE Progress</span>
-          <h2>${formatNumber(stats.scorePoints || 0)}</h2>
-          <p>очков за активность, игры, команды и сохраненные площадки</p>
-        </div>
-        <div class="progress-level-ring" aria-label="Уровень 4">
-          <span>Уровень</span>
-          <strong>4</strong>
-        </div>
-        ${progressBar(stats.levelScore || stats.games || 0, stats.levelTarget || 70, 'До следующего уровня')}
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact"><h2>Статистика</h2></div>
-        <div class="progress-period-grid">
-          ${renderPeriodStat('Неделя', week.games || 0, week.scorePoints || 0, week.minutes || 0)}
-          ${renderPeriodStat('Месяц', month.games || 0, month.scorePoints || 0, month.minutes || 0)}
-          ${renderPeriodStat('Все время', stats.games || joinedGames.length, stats.scorePoints || 0, totalMinutes)}
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact">
-          <h2>Полученные достижения</h2>
-          <span class="result-label">${earnedAchievements.length}</span>
-        </div>
-        <div class="achievement-grid">
-          ${earnedAchievements.length ? earnedAchievements.map(renderAchievement).join('') : emptyState('Пока нет открытых достижений', 'Сыграйте первую игру или забронируйте площадку.')}
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact">
-          <h2>В процессе</h2>
-          <span class="result-label">${progressAchievements.length}</span>
-        </div>
-        <div class="achievement-grid">
-          ${progressAchievements.map(renderAchievement).join('')}
-        </div>
-      </section>
-
-      <section class="section-card progress-master-card">
-        <div>
-          <span class="eyebrow">Мастерство</span>
-          <h2>Футбольный мастер</h2>
-          <p>${footballGames} футбольных игр. Следующая цель: 30 игр и стабильная посещаемость выше 90%.</p>
-        </div>
-        ${progressBar(footballGames, 30, 'Футбольный мастер')}
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact"><h2>Статистика игрока</h2></div>
-        <div class="player-stat-grid">
-          ${statCard('Игр', stats.games || 0)}
-          ${statCard('Минут на площадках', formatNumber(stats.minutesOnVenues || totalMinutes))}
-          ${statCard('Победы', stats.wins || 0)}
-          ${statCard('Любимый спорт', stats.favoriteSport || 'Футбол')}
-          ${statCard('Любимая площадка', stats.favoriteVenue || 'Арена Лужники')}
-          ${statCard('Бронирования', stats.bookings || 0)}
-        </div>
-      </section>
+    <div class="screen-stack achievements-screen">
+      ${series.length ? series.map(renderAchievementSeries).join('') : emptyState('Пока нет ачивок', 'Скоро здесь появятся первые серии SCORE.')}
     </div>
   `;
 }
@@ -370,7 +303,7 @@ export function renderProfileScreen({ state, teams, joinedGames, favoriteVenues 
           ${['Аккаунт', 'Уведомления', 'Конфиденциальность', 'Поддержка'].map((item) => `
             <button class="settings-row" type="button" data-action="${item === 'Уведомления' ? 'open-notifications' : 'profile-detail'}">
               <span>${escapeHtml(item)}</span>
-              <img src="./icons/стрелка.png" alt="" aria-hidden="true">
+              <img src="./icons/arrow.png" alt="" aria-hidden="true">
             </button>
           `).join('')}
         </div>
@@ -563,17 +496,46 @@ function renderPeriodStat(label, gamesCount, points, minutes) {
   `;
 }
 
-function renderAchievement(item) {
+function groupAchievements(achievements) {
+  const groups = [];
+  achievements.forEach((item) => {
+    const title = item.series || 'Достижения';
+    let group = groups.find((entry) => entry.title === title);
+    if (!group) {
+      group = { title, items: [] };
+      groups.push(group);
+    }
+    group.items.push(item);
+  });
+  return groups;
+}
+
+function renderAchievementSeries(series) {
+  const unlocked = series.items.filter((item) => item.unlocked).length;
   return `
-    <article class="progress-achievement-card ${item.unlocked ? 'is-earned' : ''}">
-      <div>
-        <span>${escapeHtml(item.icon || '🏆')}</span>
-        <small>${escapeHtml(item.unlocked ? `${item.rarity || 'Получено'} · ${item.date || 'сегодня'}` : item.status || 'Достижение')}</small>
+    <section class="achievement-series-card">
+      <div class="achievement-series-header">
+        <div>
+          <h2>${escapeHtml(series.title)}</h2>
+        </div>
+        <strong>${unlocked}/${series.items.length}</strong>
       </div>
+      <div class="achievement-trophy-grid">
+        ${series.items.map(renderAchievement).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderAchievement(item) {
+  const isImageIcon = typeof item.icon === 'string' && /\.(svg|png|jpe?g|webp)$/i.test(item.icon);
+  return `
+    <button class="achievement-trophy ${item.unlocked ? 'is-earned' : 'is-locked'}" type="button" data-action="achievement-detail" data-id="${escapeAttr(item.id || item.title)}">
+      <span class="achievement-medal">
+        ${isImageIcon ? `<img src="${escapeAttr(item.icon)}" alt="">` : `<b>${escapeHtml(item.icon || '🏆')}</b>`}
+      </span>
       <strong>${escapeHtml(item.title)}</strong>
-      <p>${escapeHtml(item.text)}</p>
-      <i><b style="width:${Math.max(0, Math.min(100, Number(item.progress || 0)))}%"></b></i>
-    </article>
+    </button>
   `;
 }
 

@@ -38,6 +38,30 @@ export function createGameSheet({ state, defaultDate }) {
   `;
 }
 
+export function achievementDetailSheet(achievement) {
+  const isImageIcon = typeof achievement.icon === 'string' && /\.(svg|png|jpe?g|webp)$/i.test(achievement.icon);
+  const isUnlocked = achievement.unlocked !== false;
+  const isGamesSeries = achievement.series === 'Игры';
+  const logoSrc = isGamesSeries ? './icons/logo-green.png' : './icons/logo-blue.png';
+  const progress = Math.max(0, Math.min(100, Number(achievement.progress) || 0));
+  const remaining = Math.max(0, 100 - progress);
+  return `
+    <div class="achievement-detail-sheet">
+      <article class="achievement-share-card ${isUnlocked ? 'is-earned' : 'is-locked'} ${isGamesSeries ? 'is-games-series' : ''}">
+        <div class="achievement-share-medal">
+          ${isImageIcon ? `<img src="${escapeAttr(achievement.icon)}" alt="">` : `<b>${escapeHtml(achievement.icon || '🏆')}</b>`}
+        </div>
+        <strong>${escapeHtml(achievement.title)}</strong>
+        <p>${escapeHtml(achievement.text)}</p>
+        <img class="achievement-card-logo" src="${escapeAttr(logoSrc)}" alt="SCORE">
+      </article>
+      ${isUnlocked
+        ? `<button class="button button-primary achievement-share-button ${isGamesSeries ? 'is-green' : ''}" type="button" data-action="share-achievement" data-id="${escapeAttr(achievement.id || achievement.title)}">Поделиться</button>`
+        : `<button class="button achievement-share-button achievement-progress-button" type="button" disabled>Осталось ${remaining}%</button>`}
+    </div>
+  `;
+}
+
 export function gameDetailSheet(game) {
   const status = getGameStatus(game);
   const players = game.players || [];
@@ -185,11 +209,11 @@ export function notificationsSheet(notifications) {
 export function profileDetailSheet(profile, editing = false) {
   const nickname = profile.nickname || '#77777';
   const profileItems = [
-    ['Расположение', 'district', profile.district || profile.city || 'Москва', './icons/Местоположение%20.png'],
-    ['Номер игрока', 'nickname', nickname, './icons/Профиль.png'],
-    ['Телефон', 'phone', profile.phone || 'Не указан', './icons/Телефон.png'],
-    ['Почта', 'email', profile.email || 'Не указана', './icons/Почта.png'],
-    ['Соцсеть', 'social', profile.social || 'Не указана', './icons/Сайт.png']
+    ['Расположение', 'district', profile.district || profile.city || 'Москва', './icons/location.png'],
+    ['Номер игрока', 'nickname', nickname, './icons/profile.png'],
+    ['Телефон', 'phone', profile.phone || 'Не указан', './icons/phone.png'],
+    ['Почта', 'email', profile.email || 'Не указана', './icons/email.png'],
+    ['Соцсеть', 'social', profile.social || 'Не указана', './icons/website.png']
   ];
   const tag = editing ? 'form' : 'section';
   const formAttrs = editing ? ' id="profile-form"' : '';
@@ -199,13 +223,13 @@ export function profileDetailSheet(profile, editing = false) {
       <div class="profile-sticky-title" data-profile-sticky-title>Профиль игрока</div>
       <div class="profile-detail-avatar-row">
         <button class="profile-detail-action is-primary" type="button" data-action="share-profile" aria-label="Поделиться профилем">
-          <img src="./icons/поделиться.png" alt="" aria-hidden="true">
+          <img src="./icons/share.png" alt="" aria-hidden="true">
         </button>
         <button class="profile-detail-avatar-button" type="button" data-action="${avatarAction}" aria-label="${editing ? 'Сменить аватар' : 'Открыть аватар'}">
           <img class="profile-detail-avatar" src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
         </button>
         <button class="profile-detail-action" type="button" data-action="edit-profile" aria-label="Редактировать профиль">
-          <img src="./icons/Редактировать.png" alt="" aria-hidden="true">
+          <img src="./icons/edit.png" alt="" aria-hidden="true">
         </button>
       </div>
       <div class="profile-detail-heading">
@@ -246,7 +270,7 @@ export function avatarViewSheet(profile) {
   return `
     <section class="avatar-view-card">
       <button class="avatar-view-close" type="button" data-close-sheet aria-label="Закрыть">
-        <img src="./icons/Крестик.png" alt="" aria-hidden="true">
+        <img src="./icons/close.png" alt="" aria-hidden="true">
       </button>
       <img src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
     </section>
@@ -258,18 +282,18 @@ export function avatarChangeSheet(profile) {
   return `
     <section class="avatar-change-card">
       <button class="avatar-sheet-close" type="button" data-close-sheet aria-label="Закрыть">
-        <img src="./icons/Крестик.png" alt="" aria-hidden="true">
+        <img src="./icons/close.png" alt="" aria-hidden="true">
       </button>
       <h2>Сменить аватар</h2>
       <img class="avatar-change-preview" data-avatar-preview src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
       <div class="avatar-source-row">
         <label class="avatar-source-action">
-          <img src="./icons/Профиль.png" alt="" aria-hidden="true">
+          <img src="./icons/profile.png" alt="" aria-hidden="true">
           <span>Камера</span>
           <input name="avatar" type="file" accept="image/*" capture="user">
         </label>
         <label class="avatar-source-action">
-          <img src="./icons/Почта.png" alt="" aria-hidden="true">
+          <img src="./icons/email.png" alt="" aria-hidden="true">
           <span>Галерея</span>
           <input name="avatar" type="file" accept="image/*">
         </label>

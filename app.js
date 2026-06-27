@@ -1,5 +1,5 @@
 import { defaultProfile, games, homeMvp, notifications, sports, teams, venues } from './data/mock.js';
-import { avatarChangeSheet, avatarViewSheet, createGameSheet, gameDetailSheet, notificationsSheet, profileDetailSheet, teamRequestsSheet, venueDetailSheet } from './components/sheets.js';
+import { achievementDetailSheet, avatarChangeSheet, avatarViewSheet, createGameSheet, gameDetailSheet, notificationsSheet, profileDetailSheet, teamRequestsSheet, venueDetailSheet } from './components/sheets.js';
 import { renderGamesScreen, renderHome, renderProfileScreen, renderProgressScreen, renderTeamScreen, renderVenuesScreen } from './screens/index.js';
 import { addDays, getAvatarSrc, getSportImage, normalize, startOfToday, toInputDate, withGameDate } from './utils/format.js';
 
@@ -192,10 +192,17 @@ function mergeProfile(profile = {}) {
     preferences: { ...defaultProfile.preferences, ...(profile.preferences || {}) },
     stats: mergedStats,
     sports: Array.isArray(profile.sports) ? profile.sports : clone(defaultProfile.sports),
-    achievements: (defaultProfile.achievements || []).map((item) => ({
-      ...item,
-      ...(savedAchievements.find((saved) => saved.title === item.title) || {})
-    })),
+    achievements: (defaultProfile.achievements || []).map((item) => {
+      const saved = savedAchievements.find((saved) => saved.title === item.title || saved.id === item.id) || {};
+      return {
+        ...item,
+        unlocked: saved.unlocked ?? item.unlocked,
+        progress: saved.progress ?? item.progress,
+        status: saved.status ?? item.status,
+        rarity: saved.rarity ?? item.rarity,
+        date: saved.date ?? item.date
+      };
+    }),
     history: { ...clone(defaultProfile.history || {}), ...(profile.history || {}) }
   };
 }
@@ -297,6 +304,8 @@ function handleClick(event) {
   if (actionName === 'join-game') toggleJoinGame(id);
   if (actionName === 'team-event') openTeamEventSheet(id);
   if (actionName === 'open-team-requests') openSheet(teamRequestsSheet(getSelectedTeam()));
+  if (actionName === 'achievement-detail') openAchievementSheet(id);
+  if (actionName === 'share-achievement') shareAchievement(id);
   if (actionName === 'invite-player') showToast('Ссылка приглашения подготовлена');
   if (actionName === 'create-team') showToast('Создание команды будет следующим шагом MVP');
   if (actionName === 'profile-detail') openSheet(profileDetailSheet(state.profile));
@@ -434,6 +443,182 @@ function renderProfileOnly() {
     favoriteVenues: state.venues.filter((venue) => venue.favorite),
     favoriteGames: state.games.filter((game) => game.favorite)
   });
+}
+
+function openAchievementSheet(id) {
+  const achievement = state.profile.achievements.find((item) => String(item.id || item.title) === String(id));
+  if (!achievement) return;
+  openSheet(achievementDetailSheet(achievement));
+}
+
+function getAppShareUrl() {
+  if (window.location.protocol === 'file:') return 'https://t.me/score_app';
+  return window.location.href.split(/[?#]/)[0];
+}
+
+function buildAchievementSharePayload(achievement) {
+  const appUrl = getAppShareUrl();
+  const messageLines = [
+    `Я получил достижение «${achievement.title}» в SCORE.`,
+    achievement.text ? `Задание: ${achievement.text}` : '',
+    'Залетай в SCORE: найди игру рядом, собери команду и открой свои достижения.'
+  ].filter(Boolean);
+  const text = [...messageLines, `Открыть приложение: ${appUrl}`].join('\n\n');
+
+  return {
+    title: `SCORE: ${achievement.title}`,
+    text,
+    telegramText: messageLines.join('\n\n'),
+    url: appUrl
+  };
+}
+
+function resolveAssetUrl(src) {
+  if (!src) return '';
+  if (String(src).startsWith('data:')) return src;
+  return new URL(src, document.baseURI).href;
+}
+
+function loadCanvasImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    if (/^https?:/i.test(src)) image.crossOrigin = 'anonymous';
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = resolveAssetUrl(src);
+  });
+}
+
+function roundedRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function drawContainedImage(ctx, image, x, y, size) {
+  const ratio = Math.min(size / image.width, size / image.height);
+  const width = image.width * ratio;
+  const height = image.height * ratio;
+  ctx.drawImage(image, x + (size - width) / 2, y + (size - height) / 2, width, height);
+}
+
+function getWrappedLines(ctx, text, maxWidth) {
+  const words = String(text || '').split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = '';
+  words.forEach((word) => {
+    const next = current ? `${current} ${word}` : word;
+    if (ctx.measureText(next).width <= maxWidth || !current) {
+      current = next;
+      return;
+    }
+    lines.push(current);
+    current = word;
+  });
+  if (current) lines.push(current);
+  return lines;
+}
+
+function drawCenteredLines(ctx, lines, centerX, y, lineHeight) {
+  lines.forEach((line, index) => {
+    ctx.fillText(line, centerX, y + index * lineHeight);
+  });
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 0.96));
+}
+
+async function createAchievementShareFile(achievement) {
+  const canvas = document.createElement('canvas');
+  const width = 1080;
+  const height = 1350;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  const isGamesSeries = achievement.series === 'Игры';
+  const logoSrc = isGamesSeries ? './icons/logo-green.png' : './icons/logo-blue.png';
+  const [medal, logo] = await Promise.all([
+    loadCanvasImage(achievement.icon),
+    loadCanvasImage(logoSrc).catch(() => null)
+  ]);
+
+  ctx.fillStyle = '#E4F0FF';
+  roundedRect(ctx, 0, 0, width, height, 72);
+  ctx.fill();
+  ctx.strokeStyle = '#BFD4FF';
+  ctx.lineWidth = 4;
+  roundedRect(ctx, 18, 18, width - 36, height - 36, 64);
+  ctx.stroke();
+
+  drawContainedImage(ctx, medal, 360, 170, 360);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = '#101318';
+  ctx.font = '800 68px Manrope, Arial, sans-serif';
+  const titleLines = getWrappedLines(ctx, achievement.title, 920).slice(0, 3);
+  drawCenteredLines(ctx, titleLines, width / 2, 620, 82);
+
+  ctx.fillStyle = '#5D6F94';
+  ctx.font = '800 38px Manrope, Arial, sans-serif';
+  const descriptionLines = getWrappedLines(ctx, achievement.text, 820).slice(0, 2);
+  drawCenteredLines(ctx, descriptionLines, width / 2, 620 + titleLines.length * 82 + 34, 50);
+
+  if (logo) drawContainedImage(ctx, logo, 420, 1124, 240);
+
+  const blob = await canvasToBlob(canvas);
+  if (!blob) return null;
+  const fileName = `score-${String(achievement.id || 'achievement').replace(/[^a-z0-9_-]/gi, '-')}.png`;
+  return new File([blob], fileName, { type: 'image/png' });
+}
+
+function openTelegramAchievementShare(payload) {
+  const webApp = window.Telegram?.WebApp;
+  if (!webApp || typeof webApp.openTelegramLink !== 'function') return false;
+
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(payload.url)}&text=${encodeURIComponent(payload.telegramText || payload.text)}`;
+  webApp.openTelegramLink(shareUrl);
+  return true;
+}
+
+async function shareAchievement(id) {
+  const achievement = state.profile.achievements.find((item) => String(item.id || item.title) === String(id));
+  if (!achievement || achievement.unlocked === false) return;
+  const payload = buildAchievementSharePayload(achievement);
+
+  if (navigator.share && typeof File !== 'undefined') {
+    try {
+      const file = await createAchievementShareFile(achievement);
+      if (file && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+        await navigator.share({ files: [file], title: payload.title, text: payload.text });
+        return;
+      }
+    } catch (_) {}
+  }
+
+  if (navigator.share) {
+    navigator.share({ title: payload.title, text: payload.text, url: payload.url }).catch(() => {});
+    return;
+  }
+
+  if (openTelegramAchievementShare(payload)) return;
+
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(payload.text)
+      .then(() => showToast('Текст ачивки скопирован'))
+      .catch(() => showToast('Ачивка готова к отправке'));
+    return;
+  }
+
+  showToast('Ачивка готова к отправке');
 }
 
 function getFilteredGames() {
@@ -804,6 +989,7 @@ function toggleJoinGame(id) {
 function openSheet(markup) {
   dom.sheetContent.innerHTML = markup;
   dom.sheetContent.scrollTop = 0;
+  dom.sheetPanel?.classList.toggle('is-achievement-sheet', markup.includes('achievement-detail-sheet'));
   updateProfileStickyTitle();
   dom.sheet.hidden = false;
   dom.sheet.setAttribute('aria-hidden', 'false');
@@ -815,6 +1001,7 @@ function closeSheet() {
   dom.sheet.hidden = true;
   dom.sheet.setAttribute('aria-hidden', 'true');
   dom.sheetContent.innerHTML = '';
+  dom.sheetPanel?.classList.remove('is-achievement-sheet');
   document.body.classList.remove('has-open-sheet');
 }
 

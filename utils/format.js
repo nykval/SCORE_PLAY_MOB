@@ -69,20 +69,20 @@ export function uniqueSports(items) {
 
 export function getSportImage(sport) {
   const map = {
-    'Футбол': '../SCORE PLAY/photo-plays/футбол.svg',
-    'Баскетбол': '../SCORE PLAY/photo-plays/баскетбол.svg',
-    'Волейбол': '../SCORE PLAY/photo-plays/воллейбол.svg',
-    'Теннис': '../SCORE PLAY/photo-plays/теннис.svg',
-    'Падел': '../SCORE PLAY/photo-plays/падел.svg',
-    'Хоккей': '../SCORE PLAY/photo-plays/хоккей.svg',
-    'Бег': '../SCORE PLAY/icons/map-area-base.jpg'
+    'Футбол': './assets/sports/football.svg',
+    'Баскетбол': './assets/sports/basketball.svg',
+    'Волейбол': './assets/sports/volleyball.svg',
+    'Теннис': './assets/sports/tennis.svg',
+    'Падел': './assets/sports/padel.svg',
+    'Хоккей': './assets/sports/hockey.svg',
+    'Бег': './assets/sports/map-area-base.jpg'
   };
-  return map[sport] || '../SCORE PLAY/icons/map-area-base.jpg';
+  return map[sport] || './assets/sports/map-area-base.jpg';
 }
 
 export function getAvatarSrc(id, dataUrl = '') {
   if (String(dataUrl).startsWith('data:image/')) return dataUrl;
-  return `../SCORE PLAY/avatar/avatar-${Number(id) || 1}.svg`;
+  return `./assets/avatars/avatar-${Number(id) || 1}.svg`;
 }
 
 export function getGameStatus(game) {

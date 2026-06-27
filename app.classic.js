@@ -74,20 +74,20 @@ function uniqueSports(items) {
 
 function getSportImage(sport) {
   const map = {
-    'Футбол': '../SCORE PLAY/photo-plays/футбол.svg',
-    'Баскетбол': '../SCORE PLAY/photo-plays/баскетбол.svg',
-    'Волейбол': '../SCORE PLAY/photo-plays/воллейбол.svg',
-    'Теннис': '../SCORE PLAY/photo-plays/теннис.svg',
-    'Падел': '../SCORE PLAY/photo-plays/падел.svg',
-    'Хоккей': '../SCORE PLAY/photo-plays/хоккей.svg',
-    'Бег': '../SCORE PLAY/icons/map-area-base.jpg'
+    'Футбол': './assets/sports/football.svg',
+    'Баскетбол': './assets/sports/basketball.svg',
+    'Волейбол': './assets/sports/volleyball.svg',
+    'Теннис': './assets/sports/tennis.svg',
+    'Падел': './assets/sports/padel.svg',
+    'Хоккей': './assets/sports/hockey.svg',
+    'Бег': './assets/sports/map-area-base.jpg'
   };
-  return map[sport] || '../SCORE PLAY/icons/map-area-base.jpg';
+  return map[sport] || './assets/sports/map-area-base.jpg';
 }
 
 function getAvatarSrc(id, dataUrl = '') {
   if (String(dataUrl).startsWith('data:image/')) return dataUrl;
-  return `../SCORE PLAY/avatar/avatar-${Number(id) || 1}.svg`;
+  return `./assets/avatars/avatar-${Number(id) || 1}.svg`;
 }
 
 function getGameStatus(game) {
@@ -159,10 +159,149 @@ const defaultProfile = {
     }
   },
   achievements: [
-    { title: '50 игр', text: 'Осталось 3 игры до отметки', progress: 94, icon: '⚽', status: 'Почти готово', rarity: 'Редкое', date: '', unlocked: false },
-    { title: 'Футбольный мастер', text: '25 матчей по футболу в SCORE', progress: 100, icon: '🏆', status: 'Получено', rarity: 'Эпическое', date: '12 июн.', unlocked: true },
-    { title: 'Командный игрок', text: '10 командных матчей без пропусков', progress: 100, icon: '🤝', status: 'Получено', rarity: 'Редкое', date: '4 июн.', unlocked: true },
-    { title: '100 игр', text: 'Большая сезонная цель', progress: 47, icon: '🔥', status: 'Цель', rarity: 'Легендарное', date: '', unlocked: false }
+    {
+      id: 'start-welcome',
+      series: 'Старт',
+      title: 'Добро пожаловать в игру',
+      text: 'Создать аккаунт',
+      detail: 'Первый шаг сделан: профиль SCORE создан, а значит можно искать игры, площадки и команду',
+      progress: 100,
+      icon: './icons/achievements/1.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-profile',
+      series: 'Старт',
+      title: 'Первый контракт',
+      text: 'Полностью заполнить профиль',
+      detail: 'Профиль заполнен: игрокам проще понять ваш уровень, город и спортивные интересы',
+      progress: 100,
+      icon: './icons/achievements/2.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-colors',
+      series: 'Старт',
+      title: 'Под своими цветами',
+      text: 'Выбрать любимый вид спорта',
+      detail: 'Любимый спорт выбран. SCORE будет точнее подбирать игры, площадки и задания',
+      progress: 100,
+      icon: './icons/achievements/3.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-first-game',
+      series: 'Старт',
+      title: 'Первый выход на поле',
+      text: 'Сыграть первую игру',
+      detail: 'Первая игра засчитана. Теперь начинается история ваших матчей и прогресса в SCORE',
+      progress: 100,
+      icon: './icons/achievements/4.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'start-home',
+      series: 'Старт',
+      title: 'Здесь мой дом',
+      text: 'Добавить первую площадку в избранное',
+      detail: 'Любимая площадка сохранена, чтобы быстрее возвращаться к бронированию и играм',
+      progress: 100,
+      icon: './icons/achievements/5.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'games-warmup',
+      series: 'Игры',
+      title: 'Разминка',
+      text: 'Сыграть 3 игры',
+      detail: 'Три игры сыграны: SCORE уже видит ваш ритм и спортивную активность',
+      progress: 100,
+      icon: './icons/achievements/6.png',
+      status: 'Получено',
+      rarity: 'Базовая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'games-regular',
+      series: 'Игры',
+      title: 'Постоянный игрок',
+      text: 'Сыграть 10 игр',
+      detail: 'Десять игр за плечами: вы уже не случайный участник, а стабильный игрок',
+      progress: 100,
+      icon: './icons/achievements/7.png',
+      status: 'Получено',
+      rarity: 'Редкая',
+      date: 'Сегодня',
+      unlocked: true
+    },
+    {
+      id: 'games-machine',
+      series: 'Игры',
+      title: 'Машина матчей',
+      text: 'Сыграть 50 игр',
+      detail: 'До отметки 50 игр осталось совсем немного: продолжайте выходить на площадку',
+      progress: 94,
+      icon: './icons/achievements/8.png',
+      status: 'В процессе',
+      rarity: 'Эпическая',
+      date: '',
+      unlocked: false
+    },
+    {
+      id: 'games-legend',
+      series: 'Игры',
+      title: 'Легенда SCORE',
+      text: 'Сыграть 100 игр',
+      detail: 'Большая цель сезона: сыграть 100 игр и закрепить статус легенды SCORE',
+      progress: 47,
+      icon: './icons/achievements/9.png',
+      status: 'В процессе',
+      rarity: 'Легендарная',
+      date: '',
+      unlocked: false
+    },
+    {
+      id: 'games-no-subs',
+      series: 'Игры',
+      title: 'Без замен',
+      text: 'Сыграть 10 игр подряд без большого перерыва',
+      detail: 'Серия держится, но для ачивки нужно сыграть 10 игр подряд без большого перерыва',
+      progress: 60,
+      icon: './icons/achievements/10.png',
+      status: 'В процессе',
+      rarity: 'Редкая',
+      date: '',
+      unlocked: false
+    },
+    {
+      id: 'games-habit',
+      series: 'Игры',
+      title: 'Спортивная привычка',
+      text: 'Играть каждую неделю в течение месяца',
+      detail: 'Нужно удержать спортивный ритм: играть каждую неделю в течение месяца',
+      progress: 75,
+      icon: './icons/achievements/11.png',
+      status: 'В процессе',
+      rarity: 'Редкая',
+      date: '',
+      unlocked: false
+    }
   ],
   history: {
     games: ['Вечерний футбол 5×5', 'Баскетбол 3×3 вечером', 'Беговая тренировка'],
@@ -206,12 +345,12 @@ const homeMvp = {
     gameId: 'g1'
   },
   quickActions: [
-    { title: 'Найти игру', text: 'Подбор рядом', action: 'find-game', icon: './icons/Игры.png' },
-    { title: 'Создать игру', text: 'Собрать игроков', action: 'create-game', icon: './icons/Игры.png' },
-    { title: 'Найти площадку', text: 'Фото, цена, метро', action: 'find-venue', icon: './icons/Площадки.png' },
-    { title: 'Собрать команду', text: 'Состав и заявки', action: 'nav', value: 'team', icon: './icons/Профиль.png' },
-    { title: 'Забронировать', text: 'Свободное время', action: 'book-venue', icon: './icons/Площадки.png' },
-    { title: 'Позвать друзей', text: '+150 SCORE', action: 'invite-friends', icon: './icons/поделиться.png' }
+    { title: 'Найти игру', text: 'Подбор рядом', action: 'find-game', icon: './icons/games.png' },
+    { title: 'Создать игру', text: 'Собрать игроков', action: 'create-game', icon: './icons/games.png' },
+    { title: 'Найти площадку', text: 'Фото, цена, метро', action: 'find-venue', icon: './icons/venues.png' },
+    { title: 'Собрать команду', text: 'Состав и заявки', action: 'nav', value: 'team', icon: './icons/profile.png' },
+    { title: 'Забронировать', text: 'Свободное время', action: 'book-venue', icon: './icons/venues.png' },
+    { title: 'Позвать друзей', text: '+150 SCORE', action: 'invite-friends', icon: './icons/share.png' }
   ],
   activity: [
     { label: 'Следующая игра', title: 'Вечерний футбол 5×5', meta: 'Сегодня · 20:30', action: 'game-detail', id: 'g1' },
@@ -250,7 +389,7 @@ const venues = [
     label: 'Популярная',
     free: false,
     indoor: false,
-    photo: '../SCORE PLAY/venue-photos/1569331748_90f25b1dd39e8a909b8f28193946be12.jpg',
+    photo: './assets/venues/luzhniki-7x7.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Душ', 'Парковка'],
     schedule: ['19:00 занято', '20:00 занято', '21:00 свободно', '22:00 свободно'],
     description: 'Поле с искусственным покрытием, вечерним светом и быстрым доступом к раздевалкам.'
@@ -273,7 +412,7 @@ const venues = [
     label: 'Новая',
     free: false,
     indoor: false,
-    photo: '../SCORE PLAY/venue-photos/luch-field-2-1.jpg',
+    photo: './assets/venues/luch-field-2.jpg',
     amenities: ['Освещение', 'Раздевалка', 'Wi-Fi', 'Инвентарь', 'Парковка'],
     schedule: ['18:00 занято', '19:30 свободно', '21:00 свободно'],
     description: 'Большое поле 100×64 для матчей, тренировок и командных сборов.'
@@ -296,7 +435,7 @@ const venues = [
     label: 'Открытая',
     free: false,
     indoor: false,
-    photo: '../SCORE PLAY/venue-photos/energy-court-1.jpg',
+    photo: './assets/venues/energy-court.jpg',
     amenities: ['Душ', 'Раздевалка', 'Парковка', 'Инвентарь', 'Освещение'],
     schedule: ['18:00 свободно', '20:00 свободно', '21:00 занято'],
     description: 'Открытые корты с тенниситом, освещением и водой рядом с площадкой.'
@@ -319,7 +458,7 @@ const venues = [
     label: 'В помещении',
     free: false,
     indoor: true,
-    photo: '../SCORE PLAY/venue-photos/dostoevskaya-hall-1.jpg',
+    photo: './assets/venues/dostoevskaya-hall.jpg',
     amenities: ['Зал', 'Раздевалка', 'Инвентарь', 'Тренер', 'Душ'],
     schedule: ['18:30 свободно', '20:30 занято', '22:00 свободно'],
     description: 'Универсальный зал для волейбола и баскетбола с высоким потолком.'
@@ -342,7 +481,7 @@ const venues = [
     label: 'Популярная',
     free: false,
     indoor: true,
-    photo: '../SCORE PLAY/venue-photos/belka-squash-1.jpg',
+    photo: './assets/venues/belka-squash.jpg',
     amenities: ['Душ', 'Кафе', 'Раздевалка', 'Инвентарь'],
     schedule: ['19:00 занято', '20:00 свободно', '21:00 свободно'],
     description: 'Камерные корты для быстрых игр после работы и персональных тренировок.'
@@ -365,7 +504,7 @@ const venues = [
     label: 'Открытая',
     free: true,
     indoor: false,
-    photo: '../SCORE PLAY/icons/map-area-base.jpg',
+    photo: './assets/sports/map-area-base.jpg',
     amenities: ['Бесплатно', 'Вода', 'Туалет', 'Парк'],
     schedule: ['07:00 группа', '19:00 группа', 'Любое время'],
     description: 'Точка сбора для беговых тренировок, интервалов и прогулочных групп.'
@@ -399,7 +538,7 @@ const games = [
     favorite: false,
     joined: true,
     nearby: true,
-    image: '../SCORE PLAY/photo-plays/футбол.svg',
+    image: './assets/sports/football.svg',
     description: 'Комфортный темп, без жесткого контакта. Собираемся за 10 минут до старта.'
   },
   {
@@ -428,7 +567,7 @@ const games = [
     favorite: true,
     joined: false,
     nearby: false,
-    image: '../SCORE PLAY/photo-plays/баскетбол.svg',
+    image: './assets/sports/basketball.svg',
     description: 'Быстрые смены, игра до 21 очка, хороший свет и мягкое покрытие.'
   },
   {
@@ -457,7 +596,7 @@ const games = [
     favorite: false,
     joined: false,
     nearby: true,
-    image: '../SCORE PLAY/icons/map-area-base.jpg',
+    image: './assets/sports/map-area-base.jpg',
     description: 'Интервалы, заминка и несколько темповых групп для разного уровня.'
   },
   {
@@ -486,7 +625,7 @@ const games = [
     favorite: false,
     joined: false,
     nearby: false,
-    image: '../SCORE PLAY/photo-plays/падел.svg',
+    image: './assets/sports/padel.svg',
     description: 'Объясним правила, подберем пару и дадим ракетки на месте.'
   },
   {
@@ -515,7 +654,7 @@ const games = [
     favorite: false,
     joined: false,
     nearby: false,
-    image: '../SCORE PLAY/photo-plays/воллейбол.svg',
+    image: './assets/sports/volleyball.svg',
     description: 'Средний уровень, играем сетами, ждем игроков на замену.'
   }
 ];
@@ -892,6 +1031,30 @@ function createGameSheet({ state, defaultDate }) {
   `;
 }
 
+function achievementDetailSheet(achievement) {
+  const isImageIcon = typeof achievement.icon === 'string' && /\.(svg|png|jpe?g|webp)$/i.test(achievement.icon);
+  const isUnlocked = achievement.unlocked !== false;
+  const isGamesSeries = achievement.series === 'Игры';
+  const logoSrc = isGamesSeries ? './icons/logo-green.png' : './icons/logo-blue.png';
+  const progress = Math.max(0, Math.min(100, Number(achievement.progress) || 0));
+  const remaining = Math.max(0, 100 - progress);
+  return `
+    <div class="achievement-detail-sheet">
+      <article class="achievement-share-card ${isUnlocked ? 'is-earned' : 'is-locked'} ${isGamesSeries ? 'is-games-series' : ''}">
+        <div class="achievement-share-medal">
+          ${isImageIcon ? `<img src="${escapeAttr(achievement.icon)}" alt="">` : `<b>${escapeHtml(achievement.icon || '🏆')}</b>`}
+        </div>
+        <strong>${escapeHtml(achievement.title)}</strong>
+        <p>${escapeHtml(achievement.text)}</p>
+        <img class="achievement-card-logo" src="${escapeAttr(logoSrc)}" alt="SCORE">
+      </article>
+      ${isUnlocked
+        ? `<button class="button button-primary achievement-share-button ${isGamesSeries ? 'is-green' : ''}" type="button" data-action="share-achievement" data-id="${escapeAttr(achievement.id || achievement.title)}">Поделиться</button>`
+        : `<button class="button achievement-share-button achievement-progress-button" type="button" disabled>Осталось ${remaining}%</button>`}
+    </div>
+  `;
+}
+
 function gameDetailSheet(game) {
   const status = getGameStatus(game);
   const players = game.players || [];
@@ -1039,11 +1202,11 @@ function notificationsSheet(notifications) {
 function profileDetailSheet(profile, editing = false) {
   const nickname = profile.nickname || '#77777';
   const profileItems = [
-    ['Расположение', 'district', profile.district || profile.city || 'Москва', './icons/Местоположение%20.png'],
-    ['Номер игрока', 'nickname', nickname, './icons/Профиль.png'],
-    ['Телефон', 'phone', profile.phone || 'Не указан', './icons/Телефон.png'],
-    ['Почта', 'email', profile.email || 'Не указана', './icons/Почта.png'],
-    ['Соцсеть', 'social', profile.social || 'Не указана', './icons/Сайт.png']
+    ['Расположение', 'district', profile.district || profile.city || 'Москва', './icons/location.png'],
+    ['Номер игрока', 'nickname', nickname, './icons/profile.png'],
+    ['Телефон', 'phone', profile.phone || 'Не указан', './icons/phone.png'],
+    ['Почта', 'email', profile.email || 'Не указана', './icons/email.png'],
+    ['Соцсеть', 'social', profile.social || 'Не указана', './icons/website.png']
   ];
   const tag = editing ? 'form' : 'section';
   const formAttrs = editing ? ' id="profile-form"' : '';
@@ -1053,13 +1216,13 @@ function profileDetailSheet(profile, editing = false) {
       <div class="profile-sticky-title" data-profile-sticky-title>Профиль игрока</div>
       <div class="profile-detail-avatar-row">
         <button class="profile-detail-action is-primary" type="button" data-action="share-profile" aria-label="Поделиться профилем">
-          <img src="./icons/поделиться.png" alt="" aria-hidden="true">
+          <img src="./icons/share.png" alt="" aria-hidden="true">
         </button>
         <button class="profile-detail-avatar-button" type="button" data-action="${avatarAction}" aria-label="${editing ? 'Сменить аватар' : 'Открыть аватар'}">
           <img class="profile-detail-avatar" src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
         </button>
         <button class="profile-detail-action" type="button" data-action="edit-profile" aria-label="Редактировать профиль">
-          <img src="./icons/Редактировать.png" alt="" aria-hidden="true">
+          <img src="./icons/edit.png" alt="" aria-hidden="true">
         </button>
       </div>
       <div class="profile-detail-heading">
@@ -1100,7 +1263,7 @@ function avatarViewSheet(profile) {
   return `
     <section class="avatar-view-card">
       <button class="avatar-view-close" type="button" data-close-sheet aria-label="Закрыть">
-        <img src="./icons/Крестик.png" alt="" aria-hidden="true">
+        <img src="./icons/close.png" alt="" aria-hidden="true">
       </button>
       <img src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
     </section>
@@ -1112,18 +1275,18 @@ function avatarChangeSheet(profile) {
   return `
     <section class="avatar-change-card">
       <button class="avatar-sheet-close" type="button" data-close-sheet aria-label="Закрыть">
-        <img src="./icons/Крестик.png" alt="" aria-hidden="true">
+        <img src="./icons/close.png" alt="" aria-hidden="true">
       </button>
       <h2>Сменить аватар</h2>
       <img class="avatar-change-preview" data-avatar-preview src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
       <div class="avatar-source-row">
         <label class="avatar-source-action">
-          <img src="./icons/Профиль.png" alt="" aria-hidden="true">
+          <img src="./icons/profile.png" alt="" aria-hidden="true">
           <span>Камера</span>
           <input name="avatar" type="file" accept="image/*" capture="user">
         </label>
         <label class="avatar-source-action">
-          <img src="./icons/Почта.png" alt="" aria-hidden="true">
+          <img src="./icons/email.png" alt="" aria-hidden="true">
           <span>Галерея</span>
           <input name="avatar" type="file" accept="image/*">
         </label>
@@ -1394,78 +1557,11 @@ function renderVenuesScreen({ state, venues }) {
 }
 
 function renderProgressScreen({ state, joinedGames }) {
-  const stats = state.profile.stats || {};
-  const week = stats.week || {};
-  const month = stats.month || {};
-  const totalMinutes = Math.max(Number(month.minutes || 0) * 4, Number(stats.games || 0) * 78);
   const achievements = state.profile.achievements || [];
-  const earnedAchievements = achievements.filter((item) => item.unlocked);
-  const progressAchievements = achievements.filter((item) => !item.unlocked);
-  const footballGames = state.games.filter((game) => game.sport === 'Футбол' && game.joined).length || 23;
+  const series = groupAchievements(achievements);
   return `
-    <div class="screen-stack">
-      <section class="progress-hero-card">
-        <div>
-          <span class="eyebrow">SCORE Progress</span>
-          <h2>${formatNumber(stats.scorePoints || 0)}</h2>
-          <p>очков за активность, игры, команды и сохраненные площадки</p>
-        </div>
-        <div class="progress-level-ring" aria-label="Уровень 4">
-          <span>Уровень</span>
-          <strong>4</strong>
-        </div>
-        ${progressBar(stats.levelScore || stats.games || 0, stats.levelTarget || 70, 'До следующего уровня')}
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact"><h2>Статистика</h2></div>
-        <div class="progress-period-grid">
-          ${renderPeriodStat('Неделя', week.games || 0, week.scorePoints || 0, week.minutes || 0)}
-          ${renderPeriodStat('Месяц', month.games || 0, month.scorePoints || 0, month.minutes || 0)}
-          ${renderPeriodStat('Все время', stats.games || joinedGames.length, stats.scorePoints || 0, totalMinutes)}
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact">
-          <h2>Полученные достижения</h2>
-          <span class="result-label">${earnedAchievements.length}</span>
-        </div>
-        <div class="achievement-grid">
-          ${earnedAchievements.length ? earnedAchievements.map(renderAchievement).join('') : emptyState('Пока нет открытых достижений', 'Сыграйте первую игру или забронируйте площадку.')}
-        </div>
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact">
-          <h2>В процессе</h2>
-          <span class="result-label">${progressAchievements.length}</span>
-        </div>
-        <div class="achievement-grid">
-          ${progressAchievements.map(renderAchievement).join('')}
-        </div>
-      </section>
-
-      <section class="section-card progress-master-card">
-        <div>
-          <span class="eyebrow">Мастерство</span>
-          <h2>Футбольный мастер</h2>
-          <p>${footballGames} футбольных игр. Следующая цель: 30 игр и стабильная посещаемость выше 90%.</p>
-        </div>
-        ${progressBar(footballGames, 30, 'Футбольный мастер')}
-      </section>
-
-      <section class="section-card">
-        <div class="section-header compact"><h2>Статистика игрока</h2></div>
-        <div class="player-stat-grid">
-          ${statCard('Игр', stats.games || 0)}
-          ${statCard('Минут на площадках', formatNumber(stats.minutesOnVenues || totalMinutes))}
-          ${statCard('Победы', stats.wins || 0)}
-          ${statCard('Любимый спорт', stats.favoriteSport || 'Футбол')}
-          ${statCard('Любимая площадка', stats.favoriteVenue || 'Арена Лужники')}
-          ${statCard('Бронирования', stats.bookings || 0)}
-        </div>
-      </section>
+    <div class="screen-stack achievements-screen">
+      ${series.length ? series.map(renderAchievementSeries).join('') : emptyState('Пока нет ачивок', 'Скоро здесь появятся первые серии SCORE.')}
     </div>
   `;
 }
@@ -1511,7 +1607,7 @@ function renderProfileScreen({ state, teams, joinedGames, favoriteVenues = [], f
           ${['Аккаунт', 'Уведомления', 'Конфиденциальность', 'Поддержка'].map((item) => `
             <button class="settings-row" type="button" data-action="${item === 'Уведомления' ? 'open-notifications' : 'profile-detail'}">
               <span>${escapeHtml(item)}</span>
-              <img src="./icons/стрелка.png" alt="" aria-hidden="true">
+              <img src="./icons/arrow.png" alt="" aria-hidden="true">
             </button>
           `).join('')}
         </div>
@@ -1704,17 +1800,46 @@ function renderPeriodStat(label, gamesCount, points, minutes) {
   `;
 }
 
-function renderAchievement(item) {
+function groupAchievements(achievements) {
+  const groups = [];
+  achievements.forEach((item) => {
+    const title = item.series || 'Достижения';
+    let group = groups.find((entry) => entry.title === title);
+    if (!group) {
+      group = { title, items: [] };
+      groups.push(group);
+    }
+    group.items.push(item);
+  });
+  return groups;
+}
+
+function renderAchievementSeries(series) {
+  const unlocked = series.items.filter((item) => item.unlocked).length;
   return `
-    <article class="progress-achievement-card ${item.unlocked ? 'is-earned' : ''}">
-      <div>
-        <span>${escapeHtml(item.icon || '🏆')}</span>
-        <small>${escapeHtml(item.unlocked ? `${item.rarity || 'Получено'} · ${item.date || 'сегодня'}` : item.status || 'Достижение')}</small>
+    <section class="achievement-series-card">
+      <div class="achievement-series-header">
+        <div>
+          <h2>${escapeHtml(series.title)}</h2>
+        </div>
+        <strong>${unlocked}/${series.items.length}</strong>
       </div>
+      <div class="achievement-trophy-grid">
+        ${series.items.map(renderAchievement).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderAchievement(item) {
+  const isImageIcon = typeof item.icon === 'string' && /\.(svg|png|jpe?g|webp)$/i.test(item.icon);
+  return `
+    <button class="achievement-trophy ${item.unlocked ? 'is-earned' : 'is-locked'}" type="button" data-action="achievement-detail" data-id="${escapeAttr(item.id || item.title)}">
+      <span class="achievement-medal">
+        ${isImageIcon ? `<img src="${escapeAttr(item.icon)}" alt="">` : `<b>${escapeHtml(item.icon || '🏆')}</b>`}
+      </span>
       <strong>${escapeHtml(item.title)}</strong>
-      <p>${escapeHtml(item.text)}</p>
-      <i><b style="width:${Math.max(0, Math.min(100, Number(item.progress || 0)))}%"></b></i>
-    </article>
+    </button>
   `;
 }
 
@@ -1933,10 +2058,17 @@ function mergeProfile(profile = {}) {
     preferences: { ...defaultProfile.preferences, ...(profile.preferences || {}) },
     stats: mergedStats,
     sports: Array.isArray(profile.sports) ? profile.sports : clone(defaultProfile.sports),
-    achievements: (defaultProfile.achievements || []).map((item) => ({
-      ...item,
-      ...(savedAchievements.find((saved) => saved.title === item.title) || {})
-    })),
+    achievements: (defaultProfile.achievements || []).map((item) => {
+      const saved = savedAchievements.find((saved) => saved.title === item.title || saved.id === item.id) || {};
+      return {
+        ...item,
+        unlocked: saved.unlocked ?? item.unlocked,
+        progress: saved.progress ?? item.progress,
+        status: saved.status ?? item.status,
+        rarity: saved.rarity ?? item.rarity,
+        date: saved.date ?? item.date
+      };
+    }),
     history: { ...clone(defaultProfile.history || {}), ...(profile.history || {}) }
   };
 }
@@ -2038,6 +2170,8 @@ function handleClick(event) {
   if (actionName === 'join-game') toggleJoinGame(id);
   if (actionName === 'team-event') openTeamEventSheet(id);
   if (actionName === 'open-team-requests') openSheet(teamRequestsSheet(getSelectedTeam()));
+  if (actionName === 'achievement-detail') openAchievementSheet(id);
+  if (actionName === 'share-achievement') shareAchievement(id);
   if (actionName === 'invite-player') showToast('Ссылка приглашения подготовлена');
   if (actionName === 'create-team') showToast('Создание команды будет следующим шагом MVP');
   if (actionName === 'profile-detail') openSheet(profileDetailSheet(state.profile));
@@ -2175,6 +2309,182 @@ function renderProfileOnly() {
     favoriteVenues: state.venues.filter((venue) => venue.favorite),
     favoriteGames: state.games.filter((game) => game.favorite)
   });
+}
+
+function openAchievementSheet(id) {
+  const achievement = state.profile.achievements.find((item) => String(item.id || item.title) === String(id));
+  if (!achievement) return;
+  openSheet(achievementDetailSheet(achievement));
+}
+
+function getAppShareUrl() {
+  if (window.location.protocol === 'file:') return 'https://t.me/score_app';
+  return window.location.href.split(/[?#]/)[0];
+}
+
+function buildAchievementSharePayload(achievement) {
+  const appUrl = getAppShareUrl();
+  const messageLines = [
+    `Я получил достижение «${achievement.title}» в SCORE.`,
+    achievement.text ? `Задание: ${achievement.text}` : '',
+    'Залетай в SCORE: найди игру рядом, собери команду и открой свои достижения.'
+  ].filter(Boolean);
+  const text = [...messageLines, `Открыть приложение: ${appUrl}`].join('\n\n');
+
+  return {
+    title: `SCORE: ${achievement.title}`,
+    text,
+    telegramText: messageLines.join('\n\n'),
+    url: appUrl
+  };
+}
+
+function resolveAssetUrl(src) {
+  if (!src) return '';
+  if (String(src).startsWith('data:')) return src;
+  return new URL(src, document.baseURI).href;
+}
+
+function loadCanvasImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    if (/^https?:/i.test(src)) image.crossOrigin = 'anonymous';
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = resolveAssetUrl(src);
+  });
+}
+
+function roundedRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function drawContainedImage(ctx, image, x, y, size) {
+  const ratio = Math.min(size / image.width, size / image.height);
+  const width = image.width * ratio;
+  const height = image.height * ratio;
+  ctx.drawImage(image, x + (size - width) / 2, y + (size - height) / 2, width, height);
+}
+
+function getWrappedLines(ctx, text, maxWidth) {
+  const words = String(text || '').split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = '';
+  words.forEach((word) => {
+    const next = current ? `${current} ${word}` : word;
+    if (ctx.measureText(next).width <= maxWidth || !current) {
+      current = next;
+      return;
+    }
+    lines.push(current);
+    current = word;
+  });
+  if (current) lines.push(current);
+  return lines;
+}
+
+function drawCenteredLines(ctx, lines, centerX, y, lineHeight) {
+  lines.forEach((line, index) => {
+    ctx.fillText(line, centerX, y + index * lineHeight);
+  });
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 0.96));
+}
+
+async function createAchievementShareFile(achievement) {
+  const canvas = document.createElement('canvas');
+  const width = 1080;
+  const height = 1350;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  const isGamesSeries = achievement.series === 'Игры';
+  const logoSrc = isGamesSeries ? './icons/logo-green.png' : './icons/logo-blue.png';
+  const [medal, logo] = await Promise.all([
+    loadCanvasImage(achievement.icon),
+    loadCanvasImage(logoSrc).catch(() => null)
+  ]);
+
+  ctx.fillStyle = '#E4F0FF';
+  roundedRect(ctx, 0, 0, width, height, 72);
+  ctx.fill();
+  ctx.strokeStyle = '#BFD4FF';
+  ctx.lineWidth = 4;
+  roundedRect(ctx, 18, 18, width - 36, height - 36, 64);
+  ctx.stroke();
+
+  drawContainedImage(ctx, medal, 360, 170, 360);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = '#101318';
+  ctx.font = '800 68px Manrope, Arial, sans-serif';
+  const titleLines = getWrappedLines(ctx, achievement.title, 920).slice(0, 3);
+  drawCenteredLines(ctx, titleLines, width / 2, 620, 82);
+
+  ctx.fillStyle = '#5D6F94';
+  ctx.font = '800 38px Manrope, Arial, sans-serif';
+  const descriptionLines = getWrappedLines(ctx, achievement.text, 820).slice(0, 2);
+  drawCenteredLines(ctx, descriptionLines, width / 2, 620 + titleLines.length * 82 + 34, 50);
+
+  if (logo) drawContainedImage(ctx, logo, 420, 1124, 240);
+
+  const blob = await canvasToBlob(canvas);
+  if (!blob) return null;
+  const fileName = `score-${String(achievement.id || 'achievement').replace(/[^a-z0-9_-]/gi, '-')}.png`;
+  return new File([blob], fileName, { type: 'image/png' });
+}
+
+function openTelegramAchievementShare(payload) {
+  const webApp = window.Telegram?.WebApp;
+  if (!webApp || typeof webApp.openTelegramLink !== 'function') return false;
+
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(payload.url)}&text=${encodeURIComponent(payload.telegramText || payload.text)}`;
+  webApp.openTelegramLink(shareUrl);
+  return true;
+}
+
+async function shareAchievement(id) {
+  const achievement = state.profile.achievements.find((item) => String(item.id || item.title) === String(id));
+  if (!achievement || achievement.unlocked === false) return;
+  const payload = buildAchievementSharePayload(achievement);
+
+  if (navigator.share && typeof File !== 'undefined') {
+    try {
+      const file = await createAchievementShareFile(achievement);
+      if (file && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+        await navigator.share({ files: [file], title: payload.title, text: payload.text });
+        return;
+      }
+    } catch (_) {}
+  }
+
+  if (navigator.share) {
+    navigator.share({ title: payload.title, text: payload.text, url: payload.url }).catch(() => {});
+    return;
+  }
+
+  if (openTelegramAchievementShare(payload)) return;
+
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(payload.text)
+      .then(() => showToast('Текст ачивки скопирован'))
+      .catch(() => showToast('Ачивка готова к отправке'));
+    return;
+  }
+
+  showToast('Ачивка готова к отправке');
 }
 
 function getFilteredGames() {
@@ -2545,6 +2855,7 @@ function toggleJoinGame(id) {
 function openSheet(markup) {
   dom.sheetContent.innerHTML = markup;
   dom.sheetContent.scrollTop = 0;
+  dom.sheetPanel?.classList.toggle('is-achievement-sheet', markup.includes('achievement-detail-sheet'));
   updateProfileStickyTitle();
   dom.sheet.hidden = false;
   dom.sheet.setAttribute('aria-hidden', 'false');
@@ -2556,6 +2867,7 @@ function closeSheet() {
   dom.sheet.hidden = true;
   dom.sheet.setAttribute('aria-hidden', 'true');
   dom.sheetContent.innerHTML = '';
+  dom.sheetPanel?.classList.remove('is-achievement-sheet');
   document.body.classList.remove('has-open-sheet');
 }
 
