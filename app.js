@@ -1,7 +1,7 @@
 import { defaultProfile, games, homeMvp, notifications, sports, teams, venues } from './data/mock.js';
 import { achievementDetailSheet, avatarChangeSheet, avatarViewSheet, createGameSheet, gameDetailSheet, notificationsSheet, profileDetailSheet, teamRequestsSheet, venueDetailSheet } from './components/sheets.js';
 import { renderGamesScreen, renderHome, renderProfileScreen, renderProgressScreen, renderTeamScreen, renderVenuesScreen } from './screens/index.js';
-import { addDays, getAvatarSrc, getSportImage, normalize, startOfToday, toInputDate, withGameDate } from './utils/format.js';
+import { addDays, escapeAttr, escapeHtml, getAvatarSrc, getSportImage, normalize, startOfToday, toInputDate, withGameDate } from './utils/format.js';
 
 const STORAGE_KEY = 'scoreplay_mob_state';
 const LOGIN = 'SCORE';
@@ -38,6 +38,16 @@ const dom = {
 
 const state = hydrateState();
 const SHEET_CLOSE_ANIMATION_MS = 320;
+
+function sheetHeader(label, title = '', text = '') {
+  return `
+    <div class="filter-sheet-header sheet-standard-header">
+      <span>${escapeHtml(label)}</span>
+      ${title ? `<h2>${escapeHtml(title)}</h2>` : ''}
+      ${text ? `<p>${escapeHtml(text)}</p>` : ''}
+    </div>
+  `;
+}
 let sheetCloseTimer = 0;
 
 init();
@@ -103,6 +113,19 @@ function setTelegramViewportVars() {
   if (viewportHeight > 0) {
     root.style.setProperty('--tg-viewport-height', `${viewportHeight}px`);
   }
+  const safeTop = Math.max(
+    0,
+    Number(webApp?.safeAreaInset?.top || 0),
+    Number(webApp?.contentSafeAreaInset?.top || 0)
+  );
+  const isTelegramEmbedded = Boolean(
+    webApp?.initData ||
+    (webApp?.initDataUnsafe && Object.keys(webApp.initDataUnsafe).length) ||
+    new URLSearchParams(window.location.search).has('tgWebAppPlatform') ||
+    /Telegram/i.test(navigator.userAgent)
+  );
+  const telegramChromeOffset = isTelegramEmbedded ? Math.max(safeTop, webApp.isFullscreen ? 0 : 88) : 0;
+  root.style.setProperty('--tg-top-offset', `${telegramChromeOffset}px`);
 }
 
 function hydrateState() {
@@ -164,7 +187,7 @@ function hydrateState() {
       activeScreen: saved.activeScreen === 'favorites' ? 'progress' : saved.activeScreen,
       profile: mergeProfile(saved.profile),
       notifications: Array.isArray(saved.notifications) ? saved.notifications : fallback.notifications,
-      home: { ...fallback.home, ...(saved.home || {}) },
+      home: { ...fallback.home, ...(saved.home || {}), quickActions: fallback.home.quickActions },
       venues: mergeById(fallback.venues, saved.venues),
       games: mergeById(fallback.games, saved.games).map(withGameDate),
       teams: mergeById(fallback.teams, saved.teams),
@@ -286,8 +309,22 @@ function handleClick(event) {
 
   if (actionName === 'nav' && value) navigate(value);
   if (actionName === 'profile-shortcut') navigate('profile');
-  if (actionName === 'game-filter') toggleFilter('games', value);
-  if (actionName === 'venue-filter') toggleFilter('venues', value);
+  if (actionName === 'game-filter') {
+    const railScrollLeft = action.closest('.filter-rail')?.scrollLeft;
+    toggleFilter('games', value);
+    saveState();
+    renderGamesOnly();
+    if (typeof railScrollLeft === 'number') restoreFilterRailScroll('games', railScrollLeft);
+    return;
+  }
+  if (actionName === 'venue-filter') {
+    const railScrollLeft = action.closest('.filter-rail')?.scrollLeft;
+    toggleFilter('venues', value);
+    saveState();
+    renderVenuesOnly();
+    if (typeof railScrollLeft === 'number') restoreFilterRailScroll('venues', railScrollLeft);
+    return;
+  }
   if (actionName === 'game-view') state.filters.games.view = value || 'list';
   if (actionName === 'venue-view') state.filters.venues.view = value || 'list';
   if (actionName === 'find-game') navigate('games');
@@ -433,6 +470,13 @@ function renderVenuesOnly() {
   document.querySelector('#screen-venues').innerHTML = renderVenuesScreen({ state, venues: getFilteredVenues() });
 }
 
+function restoreFilterRailScroll(scope, scrollLeft) {
+  requestAnimationFrame(() => {
+    const rail = document.querySelector(`#screen-${scope} .filter-rail`);
+    if (rail) rail.scrollLeft = scrollLeft;
+  });
+}
+
 function renderTeamOnly() {
   document.querySelector('#screen-team').innerHTML = renderTeamScreen({ state, team: getSelectedTeam() });
 }
@@ -567,23 +611,14 @@ async function createAchievementShareFile(achievement) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   ctx.fillStyle = '#101318';
-  ctx.font = '800 68px Manrope, Arial, sans-serif';
+  ctx.font = '800 68px Nunito, Arial, sans-serif';
   const titleLines = getWrappedLines(ctx, achievement.title, 920).slice(0, 3);
   drawCenteredLines(ctx, titleLines, width / 2, 620, 82);
 
   ctx.fillStyle = '#5D6F94';
-  ctx.font = '800 38px Manrope, Arial, sans-serif';
+  ctx.font = '800 38px Nunito, Arial, sans-serif';
   const descriptionLines = getWrappedLines(ctx, achievement.text, 820).slice(0, 2);
   drawCenteredLines(ctx, descriptionLines, width / 2, 620 + titleLines.length * 82 + 34, 50);
-
-  ctx.fillStyle = '#3A85FD';
-  ctx.font = '800 34px Manrope, Arial, sans-serif';
-  const inviteLines = getWrappedLines(ctx, 'Залетай в SCORE: найди игру рядом и открой свои достижения', 760).slice(0, 2);
-  drawCenteredLines(ctx, inviteLines, width / 2, 972, 44);
-
-  ctx.fillStyle = '#5D6F94';
-  ctx.font = '700 26px Manrope, Arial, sans-serif';
-  ctx.fillText(getAppShareUrl(), width / 2, 1064);
 
   if (logo) drawContainedImage(ctx, logo, 420, 1150, 240);
 
@@ -611,7 +646,7 @@ async function shareAchievement(id) {
     try {
       const file = await createAchievementShareFile(achievement);
       if (file && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-        await navigator.share({ files: [file], title: payload.title });
+        await navigator.share({ files: [file], text: payload.text });
         return;
       }
     } catch (_) {}
@@ -843,23 +878,19 @@ function renderCreateGameErrors(errors) {
 
 function openGameSheet(id) {
   const game = state.games.find((item) => item.id === id);
-  if (game) openSheet(gameDetailSheet(game));
+  if (game) openSheet(gameDetailSheet(game, state));
 }
 
 function openVenueSheet(id) {
   const venue = state.venues.find((item) => item.id === id);
-  if (venue) openSheet(venueDetailSheet(venue));
+  if (venue) openSheet(venueDetailSheet(venue, state));
 }
 
 function openTeamEventSheet(id) {
   const event = getSelectedTeam().events.find((item) => item.id === id);
   if (!event) return;
   openSheet(`
-    <div class="sheet-heading">
-      <span class="eyebrow">${event.type}</span>
-      <h2>${event.title}</h2>
-      <p>${event.time} · ${event.place}</p>
-    </div>
+    ${sheetHeader(event.type, event.title, `${event.time} · ${event.place}`)}
     <section class="section-card flat"><strong>${event.note}</strong></section>
     <button class="button button-primary button-full" type="button" data-action="create-game">Создать похожую игру</button>
   `);
@@ -979,6 +1010,10 @@ function toggleFavorite(collection, id) {
   const item = state[collection].find((entry) => entry.id === id);
   if (!item) return;
   item.favorite = !item.favorite;
+  const action = collection === 'games' ? 'favorite-game' : 'favorite-venue';
+  const button = document.querySelector(`[data-action="${action}"][data-id="${escapeAttr(id)}"]`);
+  button?.classList.toggle('is-active', item.favorite);
+  button?.setAttribute('aria-label', item.favorite ? 'Убрать из избранного' : 'Добавить в избранное');
   showToast(item.favorite ? 'Сохранено' : 'Убрано из сохраненных');
 }
 
@@ -1003,7 +1038,9 @@ function openSheet(markup) {
   clearTimeout(sheetCloseTimer);
   dom.sheetContent.innerHTML = markup;
   dom.sheetContent.scrollTop = 0;
+  bindDetailPhotoSliders();
   dom.sheetPanel?.classList.toggle('is-achievement-sheet', markup.includes('achievement-detail-sheet'));
+  dom.sheetPanel?.classList.toggle('is-detail-sheet', markup.includes('class="detail-sheet'));
   updateProfileStickyTitle();
   dom.sheet.hidden = false;
   dom.sheet.setAttribute('aria-hidden', 'false');
@@ -1033,9 +1070,29 @@ function closeSheet() {
     dom.sheet.classList.remove('is-closing');
     dom.sheetContent.innerHTML = '';
     dom.sheetPanel?.classList.remove('is-achievement-sheet');
+    dom.sheetPanel?.classList.remove('is-detail-sheet');
     if (dom.sheetPanel) dom.sheetPanel.style.transform = '';
     document.body.classList.remove('has-open-sheet');
   }, SHEET_CLOSE_ANIMATION_MS);
+}
+
+function bindDetailPhotoSliders() {
+  document.querySelectorAll('.detail-photo-slider').forEach((slider) => {
+    const track = slider.querySelector('.detail-photo-track');
+    const dots = Array.from(slider.querySelectorAll('.detail-photo-dots span'));
+    if (!track || !dots.length) return;
+    let frame = 0;
+    const syncDots = () => {
+      frame = 0;
+      const index = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === index));
+    };
+    track.addEventListener('scroll', () => {
+      if (frame) return;
+      frame = requestAnimationFrame(syncDots);
+    }, { passive: true });
+    syncDots();
+  });
 }
 
 function showToast(message) {

@@ -85,6 +85,17 @@ function getSportImage(sport) {
   return map[sport] || './assets/sports/map-area-base.jpg';
 }
 
+function getSportFilterIcon(sport) {
+  const map = {
+    'Футбол': './icons/buicons/футбол.png',
+    'Баскетбол': './icons/buicons/баскетбол.png',
+    'Волейбол': './icons/buicons/воллейбол.png',
+    'Теннис': './icons/buicons/большой теннис.png',
+    'Хоккей': './icons/buicons/хоккей.png'
+  };
+  return map[sport] || getSportImage(sport);
+}
+
 function getAvatarSrc(id, dataUrl = '') {
   if (String(dataUrl).startsWith('data:image/')) return dataUrl;
   return `./assets/avatars/avatar-${Number(id) || 1}.svg`;
@@ -100,6 +111,62 @@ function getGameStatus(game) {
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, Number(value) || 0));
 }
+
+const MILLION_PLUS_CITIES = [
+  'Москва',
+  'Санкт-Петербург',
+  'Новосибирск',
+  'Екатеринбург',
+  'Казань',
+  'Нижний Новгород',
+  'Красноярск',
+  'Челябинск',
+  'Самара',
+  'Уфа',
+  'Ростов-на-Дону',
+  'Краснодар',
+  'Омск',
+  'Воронеж',
+  'Пермь',
+  'Волгоград'
+];
+
+const RUSSIAN_CITIES = `
+Абакан, Азов, Альметьевск, Анапа, Ангарск, Анжеро-Судженск, Арзамас, Армавир, Арсеньев, Артём, Архангельск, Астрахань, Ачинск,
+Балаково, Балашиха, Балашов, Барнаул, Батайск, Белгород, Белебей, Белово, Белогорск, Белорецк, Белореченск, Бердск, Березники, Бийск, Биробиджан, Благовещенск, Бор, Братск, Брянск, Бугульма, Будённовск,
+Великие Луки, Великий Новгород, Верхняя Пышма, Видное, Владивосток, Владикавказ, Владимир, Волгоград, Волгодонск, Волжский, Вологда, Вольск, Воронеж, Воткинск, Всеволожск, Выборг, Выкса, Вязьма,
+Гатчина, Геленджик, Георгиевск, Глазов, Горно-Алтайск, Грозный, Губкин,
+Дербент, Дзержинск, Димитровград, Дмитров, Долгопрудный, Домодедово,
+Евпатория, Егорьевск, Екатеринбург, Елабуга, Елец, Ессентуки,
+Железногорск (Курская область), Железногорск (Красноярский край), Жигулёвск,
+Заречный (Пензенская область), Зеленодольск, Зеленогорск, Златоуст,
+Иваново, Ижевск, Иркутск, Искитим, Ишим,
+Йошкар-Ола,
+Казань, Калининград, Калуга, Каменск-Уральский, Камышин, Канск, Каспийск, Кемерово, Керчь, Кинешма, Киров, Кирово-Чепецк, Киселёвск, Кисловодск, Клин, Ковров, Коломна, Комсомольск-на-Амуре, Копейск, Королёв, Кострома, Котлас, Красногорск, Краснодар, Краснокаменск, Краснокамск, Краснотурьинск, Красноярск, Кропоткин, Крымск, Кстово, Кузнецк, Кумертау, Курган, Курск, Кызыл,
+Лабинск, Лениногорск, Ленинск-Кузнецкий, Лесосибирск, Липецк, Лиски, Лобня, Лысьва, Люберцы,
+Магадан, Магнитогорск, Майкоп, Махачкала, Междуреченск, Миасс, Минеральные Воды, Минусинск, Михайловка, Мичуринск, Москва, Мурманск, Муром, Мытищи,
+Набережные Челны, Назрань, Нальчик, Находка, Невинномысск, Нерюнгри, Нефтекамск, Нефтеюганск, Нижневартовск, Нижнекамск, Нижний Новгород, Нижний Тагил, Новоалтайск, Новокузнецк, Новокуйбышевск, Новомосковск, Новороссийск, Новосибирск, Новотроицк, Новочебоксарск, Новочеркасск, Новошахтинск, Новый Уренгой, Ногинск, Норильск, Ноябрьск,
+Обнинск, Одинцово, Октябрьский, Омск, Орёл, Оренбург, Орехово-Зуево, Орск,
+Павлово, Пенза, Первоуральск, Пермь, Петрозаводск, Петропавловск-Камчатский, Подольск, Прокопьевск, Прохладный, Псков, Пушкино, Пятигорск,
+Раменское, Реутов, Рославль, Россошь, Ростов-на-Дону, Рубцовск, Рыбинск, Рязань,
+Салават, Сальск, Самара, Санкт-Петербург, Саранск, Сарапул, Саратов, Саров, Саяногорск, Свободный, Северодвинск, Северск, Сергиев Посад, Серов, Серпухов, Симферополь, Смоленск, Соликамск, Солнечногорск, Сосновый Бор, Сочи, Ставрополь, Старый Оскол, Стерлитамак, Ступино, Сургут, Сызрань, Сыктывкар,
+Таганрог, Тамбов, Тверь, Тимашёвск, Тихвин, Тихорецк, Тобольск, Тольятти, Томск, Троицк (Челябинская область), Туапсе, Туймазы, Тула, Тюмень,
+Улан-Удэ, Ульяновск, Усолье-Сибирское, Уссурийск, Усть-Илимск, Уфа, Ухта,
+Феодосия, Фрязино,
+Хабаровск, Ханты-Мансийск, Хасавюрт, Химки,
+Чайковский, Чапаевск, Чебоксары, Челябинск, Черемхово, Череповец, Черкесск, Черногорск, Чехов, Чита,
+Шадринск, Шахты, Шуя,
+Щёлково,
+Элиста, Энгельс,
+Южно-Сахалинск, Юрга,
+Якутск, Ялта, Ярославль
+`.split(',')
+  .map((city) => city.trim())
+  .filter(Boolean)
+  .filter((city, index, list) => list.indexOf(city) === index)
+  .sort((a, b) => a.localeCompare(b, 'ru'));
+
+const CITY_ALPHABET = ['Все', ...Array.from(new Set(RUSSIAN_CITIES.map((city) => city[0]?.toUpperCase()).filter(Boolean)))];
 
 
 // ---- MOB/data/mock.js ----
@@ -774,12 +841,30 @@ function loadingState(text = 'Загружаем') {
 }
 
 function searchBar({ scope, value, placeholder, buttonLabel = '', buttonAction = '' }) {
+  const isFilterable = scope === 'games' || scope === 'venues';
+  const filterCount = scope === 'games'
+    ? activeGameFilterCount(state.filters.games)
+    : scope === 'venues'
+      ? activeVenueFilterCount(state.filters.venues)
+      : 0;
+  const sortActive = isFilterable && state.filters[scope]?.sort && state.filters[scope].sort !== 'recommended';
+  const entity = scope === 'games' ? 'game' : scope === 'venues' ? 'venue' : scope;
   return `
-    <div class="search-row">
+    <div class="search-row ${isFilterable ? 'has-tools' : ''}">
       <label class="search-bar">
         <span>Поиск</span>
+        <img src="./icons/поиск.png" alt="" aria-hidden="true">
         <input data-search="${escapeAttr(scope)}" type="search" placeholder="${escapeAttr(placeholder)}" value="${escapeAttr(value)}">
       </label>
+      ${isFilterable ? `
+        <button class="search-tool ${sortActive ? 'is-active' : ''}" type="button" data-action="open-${escapeAttr(entity)}-sort" aria-label="Сортировка">
+          <img src="./icons/сортировка.png" alt="" aria-hidden="true">
+        </button>
+        <button class="search-tool ${filterCount ? 'is-active' : ''}" type="button" data-action="open-${escapeAttr(entity)}-filters" aria-label="Фильтры">
+          <img src="./icons/фильтр.png" alt="" aria-hidden="true">
+          ${filterCount ? `<b>${filterCount}</b>` : ''}
+        </button>
+      ` : ''}
       ${buttonLabel ? `<button class="button button-secondary search-action" type="button" data-action="${escapeAttr(buttonAction)}">${escapeHtml(buttonLabel)}</button>` : ''}
     </div>
   `;
@@ -787,11 +872,467 @@ function searchBar({ scope, value, placeholder, buttonLabel = '', buttonAction =
 
 function viewToggle(active, action = 'game-view') {
   return `
-    <div class="view-toggle" role="group" aria-label="Вид">
+    <div class="view-toggle" role="group" aria-label="Вид" data-view="${escapeAttr(active)}">
+      <span class="view-toggle-indicator" aria-hidden="true"></span>
       <button class="${active === 'list' ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action)}" data-value="list">Список</button>
       <button class="${active === 'map' ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action)}" data-value="map">Карта</button>
     </div>
   `;
+}
+
+function filterPill({ label, active = false, action = '', value = '', chevron = false }) {
+  const actionAttrs = action ? `data-action="${escapeAttr(action)}" ${value ? `data-value="${escapeAttr(value)}"` : ''}` : '';
+  return `
+    <button class="filter-pill ${active ? 'is-active' : ''} ${chevron ? 'has-chevron' : ''}" type="button" ${actionAttrs}>
+      <span>${escapeHtml(label)}</span>
+      ${chevron ? '<img src="./icons/arrow.png" alt="" aria-hidden="true">' : ''}
+    </button>
+  `;
+}
+
+const quickGameFilterValues = new Set(['date:today', 'price:free', 'distance:near', 'slots:open', 'almostFull']);
+const quickVenueFilterValues = new Set(['distance:near', 'price:free', 'availableToday', 'type:indoor', 'favorite']);
+
+function isQuickFilterValue(scope, value) {
+  return scope === 'games' ? quickGameFilterValues.has(value) : quickVenueFilterValues.has(value);
+}
+
+function isFilterValueActive(scope, filters, value) {
+  if (!value) return false;
+  if (typeof filters[value] === 'boolean') return filters[value];
+  if (scope === 'games' && value.startsWith('date:')) return filters.date === value.slice(5);
+  if (scope === 'games' && value.startsWith('price:')) return filters.price === value.slice(6);
+  if (scope === 'games' && value.startsWith('distance:')) return filters.distance === value.slice(9);
+  if (scope === 'games' && value.startsWith('slots:')) return filters.slots === value.slice(6);
+  if (scope === 'venues' && value.startsWith('price:')) return filters.price === value.slice(6);
+  if (scope === 'venues' && value.startsWith('distance:')) return filters.distance === value.slice(9);
+  if (scope === 'venues' && value.startsWith('type:')) return filters.type === value.slice(5);
+  return false;
+}
+
+function getVenueSportValues(filters) {
+  if (Array.isArray(filters.sports)) return filters.sports.filter(Boolean);
+  if (Array.isArray(filters.sport)) return filters.sport.filter((item) => item && item !== 'Все');
+  return filters.sport && filters.sport !== 'Все' ? [filters.sport] : [];
+}
+
+function setVenueSportValues(filters, values) {
+  filters.sports = Array.from(new Set((values || []).filter(Boolean)));
+  filters.sport = filters.sports.length ? filters.sports[0] : 'Все';
+}
+
+function normalizeVenueFilters(filters) {
+  const normalized = { ...filters };
+  setVenueSportValues(normalized, getVenueSportValues(filters));
+  normalized.priceMin = normalized.priceMin || '';
+  normalized.priceMax = normalized.priceMax || '';
+  normalized.distanceKm = clamp(normalized.distanceKm || 100, 1, 100);
+  return normalized;
+}
+
+function resetVenueFilterValues(filters) {
+  setVenueSportValues(filters, []);
+  filters.price = 'any';
+  filters.priceMin = '';
+  filters.priceMax = '';
+  filters.type = 'any';
+  filters.distance = 'any';
+  filters.distanceKm = 100;
+  filters.size = 'Все';
+  filters.availableToday = false;
+  filters.favorite = false;
+  filters.indoor = false;
+  filters.open = false;
+  filters.isNew = false;
+  filters.quickPinned = '';
+}
+
+function hasVenueFilterChanges() {
+  if (!venueFilterDraft) return false;
+  return JSON.stringify(normalizeVenueFilters(venueFilterDraft)) !== JSON.stringify(normalizeVenueFilters(state.filters.venues));
+}
+
+function orderQuickFilters(filters, items) {
+  return items
+    .map((item, index) => ({ ...item, index }))
+    .sort((a, b) => {
+      const aPinned = a.active && a.value === filters.quickPinned;
+      const bPinned = b.active && b.value === filters.quickPinned;
+      if (aPinned !== bPinned) return aPinned ? -1 : 1;
+      if (a.active !== b.active) return a.active ? -1 : 1;
+      return a.index - b.index;
+    });
+}
+
+function filterLauncher(scope, count) {
+  return `
+    <button class="filter-launcher" type="button" data-action="open-${escapeAttr(scope)}-filters" aria-label="Все фильтры">
+      <span class="filter-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      ${count ? `<b>${count}</b>` : ''}
+    </button>
+  `;
+}
+
+function activeGameFilterCount(filters) {
+  return [
+    filters.sport !== 'Все',
+    filters.date !== 'any' && filters.date !== 'today',
+    filters.time !== 'any',
+    filters.distance !== 'any' && filters.distance !== 'near',
+    filters.level !== 'Все',
+    filters.price !== 'any' && filters.price !== 'free',
+    filters.slots !== 'any' && filters.slots !== 'open'
+  ].filter(Boolean).length;
+}
+
+function activeVenueFilterCount(filters) {
+  const sports = getVenueSportValues(filters);
+  return [
+    sports.length > 0,
+    (filters.price !== 'any' && filters.price !== 'free') || filters.priceMin !== '' || filters.priceMax !== '',
+    filters.distance !== 'any' && filters.distance !== 'near',
+    filters.type !== 'any' && filters.type !== 'indoor',
+    filters.size !== 'Все'
+  ].filter(Boolean).length;
+}
+
+function filterOption({ label, meta = '', active = false, action, value }) {
+  return `
+    <button class="filter-option ${active ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action)}" data-value="${escapeAttr(value)}">
+      <span>
+        <strong>${escapeHtml(label)}</strong>
+        ${meta ? `<small>${escapeHtml(meta)}</small>` : ''}
+      </span>
+      <i aria-hidden="true"></i>
+    </button>
+  `;
+}
+
+function filterSection(title, options) {
+  return `
+    <section class="filter-sheet-section">
+      ${title ? `<h3>${escapeHtml(title)}</h3>` : ''}
+      <div class="filter-option-list">${options}</div>
+    </section>
+  `;
+}
+
+function sheetHeader(label, title = '', text = '') {
+  return `
+    <div class="filter-sheet-header sheet-standard-header">
+      <span>${escapeHtml(label)}</span>
+      ${title ? `<h2>${escapeHtml(title)}</h2>` : ''}
+      ${text ? `<p>${escapeHtml(text)}</p>` : ''}
+    </div>
+  `;
+}
+
+function uniqueImageList(images) {
+  const seen = new Set();
+  return images.filter((src) => {
+    if (!src || seen.has(src)) return false;
+    seen.add(src);
+    return true;
+  });
+}
+
+function detailPhotoSlider(images, title, meta = '') {
+  const slides = uniqueImageList(images).slice(0, 4);
+  if (!slides.length) return '';
+  return `
+    <section class="detail-photo-slider" aria-label="Фотографии">
+      <div class="detail-photo-track">
+        ${slides.map((src, index) => `
+          <figure class="detail-photo-slide">
+            <img src="${escapeAttr(src)}" alt="${escapeAttr(`${title} фото ${index + 1}`)}">
+          </figure>
+        `).join('')}
+      </div>
+      ${slides.length > 1 ? `<div class="detail-photo-dots">${slides.map((_, index) => `<span class="${index === 0 ? 'is-active' : ''}"></span>`).join('')}</div>` : ''}
+    </section>
+  `;
+}
+
+function bindDetailPhotoSliders() {
+  document.querySelectorAll('.detail-photo-slider').forEach((slider) => {
+    const track = slider.querySelector('.detail-photo-track');
+    const dots = Array.from(slider.querySelectorAll('.detail-photo-dots span'));
+    if (!track || !dots.length) return;
+    let frame = 0;
+    const syncDots = () => {
+      frame = 0;
+      const index = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === index));
+    };
+    track.addEventListener('scroll', () => {
+      if (frame) return;
+      frame = requestAnimationFrame(syncDots);
+    }, { passive: true });
+    syncDots();
+  });
+}
+
+function getGameDetailPhotos(game) {
+  const relatedVenues = state.venues.filter((venue) => venue.name === game.place || venue.sport === game.sport);
+  return uniqueImageList([
+    ...relatedVenues.map((venue) => venue.photo),
+    game.image,
+    getSportImage(game.sport)
+  ]);
+}
+
+function getVenueDetailPhotos(venue) {
+  const relatedVenues = state.venues.filter((item) => item.id !== venue.id && item.sport === venue.sport);
+  return uniqueImageList([
+    venue.photo,
+    ...relatedVenues.map((item) => item.photo)
+  ]);
+}
+
+function sportMultiSection(filters, sports) {
+  const selected = getVenueSportValues(filters);
+  return `
+    <section class="filter-sheet-section sport-filter-section">
+      <div class="filter-section-title-row">
+        <h3>Вид спорта</h3>
+      </div>
+      <div class="sport-filter-grid">
+        ${sports.map((sport) => `
+          <button class="sport-filter-card ${selected.includes(sport) ? 'is-active' : ''}" type="button" data-action="venue-filter-draft" data-value="sport:${escapeAttr(sport)}">
+            <img src="${escapeAttr(getSportFilterIcon(sport))}" alt="" aria-hidden="true">
+            <span>${escapeHtml(sport)}</span>
+          </button>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function priceRangeSection(filters) {
+  const min = filters.priceMin || '';
+  const max = filters.priceMax || '';
+  const hasRange = min !== '' || max !== '';
+  return `
+    <div class="filter-control-group">
+      <h3 class="filter-block-title">Цена</h3>
+      <section class="filter-sheet-section price-range-section ${hasRange ? 'is-active' : ''}">
+        <div class="price-input-row">
+          <label><span>₽</span><input type="number" inputmode="numeric" min="0" placeholder="0" value="${escapeAttr(min)}" data-price-bound="min"></label>
+          <b>-</b>
+          <label><span>₽</span><input type="number" inputmode="numeric" min="0" placeholder="10000" value="${escapeAttr(max)}" data-price-bound="max"></label>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function distanceRangeSection(filters, action) {
+  const value = filters.distance === 'near'
+    ? 2
+    : filters.distance === 'five'
+      ? 5
+      : clamp(filters.distanceKm || 100, 1, 100);
+  const activeValue = filters.distance === 'any' ? 'any' : String(value);
+  const options = [
+    ['any', 'Все'],
+    ['2', 'до 2 км'],
+    ['5', 'до 5 км'],
+    ['10', 'до 10 км'],
+    ['20', 'до 20 км'],
+    ['50', 'до 50 км']
+  ];
+  return `
+    <div class="filter-control-group">
+      <h3 class="filter-block-title">Расстояние</h3>
+      <section class="filter-sheet-section distance-range-section">
+        <div class="distance-choice-grid">
+          ${options.map(([optionValue, label]) => `
+            <button class="distance-choice-button ${activeValue === optionValue ? 'is-active' : ''}" type="button" data-action="${escapeAttr(action === 'venues' ? 'venue-filter-draft' : `${action}-filter`)}" data-value="distance:${optionValue}">
+              ${escapeHtml(label)}
+            </button>
+          `).join('')}
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function typeSegmentSection(filters) {
+  const options = [
+    ['any', 'Любой тип'],
+    ['indoor', 'Крытая'],
+    ['open', 'Открытая']
+  ];
+  return `
+    <section class="filter-sheet-section type-segment-section">
+      <h3>Тип площадки</h3>
+      <div class="type-segment" data-active="${escapeAttr(filters.type || 'any')}">
+        ${options.map(([value, label]) => `
+          <button class="${filters.type === value ? 'is-active' : ''}" type="button" data-action="venue-filter-draft" data-value="type:${value}">${escapeHtml(label)}</button>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderGamesFilterRail() {
+  const filters = state.filters.games;
+  const items = orderQuickFilters(filters, [
+    { label: 'Сегодня', active: filters.date === 'today', action: 'game-filter', value: 'date:today' },
+    { label: 'Бесплатно', active: filters.price === 'free', action: 'game-filter', value: 'price:free' },
+    { label: 'Рядом', active: filters.distance === 'near', action: 'game-filter', value: 'distance:near' },
+    { label: 'Есть свободные места', active: filters.slots === 'open', action: 'game-filter', value: 'slots:open' },
+    { label: 'Почти собрана', active: filters.almostFull, action: 'game-filter', value: 'almostFull' }
+  ]);
+  return `
+    <div class="chip-scroll filter-rail">
+      ${items.map((item) => filterPill(item)).join('')}
+    </div>
+  `;
+}
+
+function renderVenuesFilterRail() {
+  const filters = state.filters.venues;
+  const items = orderQuickFilters(filters, [
+    { label: 'Рядом', active: filters.distance === 'near', action: 'venue-filter', value: 'distance:near' },
+    { label: 'Бесплатные', active: filters.price === 'free', action: 'venue-filter', value: 'price:free' },
+    { label: 'Свободно сегодня', active: filters.availableToday, action: 'venue-filter', value: 'availableToday' },
+    { label: 'Крытые', active: filters.type === 'indoor', action: 'venue-filter', value: 'type:indoor' },
+    { label: 'Избранные', active: filters.favorite, action: 'venue-filter', value: 'favorite' }
+  ]);
+  return `
+    <div class="chip-scroll filter-rail">
+      ${items.map((item) => filterPill(item)).join('')}
+    </div>
+  `;
+}
+
+function gamesFiltersSheet() {
+  const filters = state.filters.games;
+  const sports = ['Все', ...uniqueSports(state.games)];
+  const levels = ['Все', ...Array.from(new Set(state.games.map((game) => game.level).filter(Boolean)))];
+  return `
+    <div class="filter-sheet">
+      <div class="filter-sheet-header">
+        <span>Фильтры</span>
+      </div>
+      <div class="filter-sheet-body">
+        ${filterSection('Вид спорта', sports.map((sport) => filterOption({ label: sport, active: filters.sport === sport, action: 'game-filter', value: `sport:${sport}` })).join(''))}
+        ${filterSection('Дата', [
+          ['any', 'Любая дата', 'Все ближайшие игры'],
+          ['today', 'Сегодня', 'Игры на сегодня'],
+          ['week', 'На неделе', 'Ближайшие 7 дней']
+        ].map(([value, label, meta]) => filterOption({ label, meta, active: filters.date === value, action: 'game-filter', value: `date:${value}` })).join(''))}
+        ${filterSection('Время', [
+          ['any', 'Любое время'],
+          ['morning', 'Утро'],
+          ['evening', 'Вечер']
+        ].map(([value, label]) => filterOption({ label, active: filters.time === value, action: 'game-filter', value: `time:${value}` })).join(''))}
+        ${filterSection('Стоимость', [
+          ['price:any', 'Любая цена'],
+          ['price:free', 'Бесплатно'],
+          ['price:paid', 'Платные']
+        ].map(([value, label]) => filterOption({
+          label,
+          active: filters.price === value.slice(6),
+          action: 'game-filter',
+          value
+        })).join(''))}
+        ${filterSection('Расстояние', [
+          ['any', 'Все расстояния'],
+          ['near', 'До 2 км'],
+          ['five', 'До 5 км']
+        ].map(([value, label]) => filterOption({ label, active: filters.distance === value, action: 'game-filter', value: `distance:${value}` })).join(''))}
+        ${filterSection('Уровень игры', levels.map((level) => filterOption({ label: level, active: filters.level === level, action: 'game-filter', value: `level:${level}` })).join(''))}
+        ${filterSection('Свободные места', [
+          ['slots:any', 'Не важно'],
+          ['slots:open', 'Есть свободные места']
+        ].map(([value, label]) => filterOption({
+          label,
+          active: filters.slots === value.slice(6),
+          action: 'game-filter',
+          value
+        })).join(''))}
+      </div>
+      <div class="filter-sheet-footer">
+        <button class="button button-secondary filter-reset-button" type="button" data-action="game-filter" data-value="reset">Сбросить</button>
+        <button class="button button-primary filter-apply-button is-active" type="button" data-action="filters-done">Применить</button>
+      </div>
+    </div>
+  `;
+}
+
+function venuesFiltersSheet() {
+  const filters = normalizeVenueFilters(venueFilterDraft || state.filters.venues);
+  const sportOptions = ['Футбол', 'Баскетбол', 'Волейбол', 'Теннис', 'Хоккей'];
+  const sizes = ['Все', ...Array.from(new Set(state.venues.map((venue) => venue.size).filter(Boolean)))];
+  const hasChanges = hasVenueFilterChanges();
+  const canReset = hasChanges || activeVenueFilterCount(filters) > 0;
+  return `
+    <div class="filter-sheet">
+      <div class="filter-sheet-header">
+        <span>Фильтры</span>
+      </div>
+      <div class="filter-sheet-body">
+        ${sportMultiSection(filters, sportOptions)}
+        ${priceRangeSection(filters)}
+        ${distanceRangeSection(filters, 'venues')}
+        ${typeSegmentSection(filters)}
+        ${filterSection('Размер площадки', sizes.map((size) => filterOption({ label: size, active: filters.size === size, action: 'venue-filter-draft', value: `size:${size}` })).join(''))}
+      </div>
+      <div class="filter-sheet-footer">
+        <button class="button button-secondary filter-reset-button ${canReset ? 'is-active' : ''}" type="button" data-action="venue-filter-draft" data-value="reset">Сбросить</button>
+        <button class="button button-primary filter-apply-button ${hasChanges ? 'is-active' : ''}" type="button" data-action="apply-venue-filters" ${hasChanges ? '' : 'disabled'}>Применить</button>
+      </div>
+    </div>
+  `;
+}
+
+function gamesSortSheet() {
+  const current = state.filters.games.sort || 'recommended';
+  return `
+    <div class="filter-sheet sort-sheet">
+      <div class="filter-sheet-header">
+        <span>Сортировка</span>
+      </div>
+      ${filterSection('', [
+        ['recommended', 'По релевантности', 'Лучшие совпадения'],
+        ['distance', 'По расстоянию', 'Ближе к вам'],
+        ['start-time', 'По времени начала', 'Скоро начнутся'],
+        ['price', 'По стоимости', 'Сначала дешевле'],
+        ['popular', 'По популярности', 'Самые активные наборы']
+      ].map(([value, label, meta]) => filterOption({ label, meta, active: current === value, action: 'game-sort', value })).join(''))}
+      <div class="filter-sheet-footer is-single">
+        <button class="button button-primary" type="button" data-action="filters-done">Применить</button>
+      </div>
+    </div>
+  `;
+}
+
+function venuesSortSheet() {
+  const current = state.filters.venues.sort || 'recommended';
+  return `
+    <div class="filter-sheet sort-sheet">
+      <div class="filter-sheet-header">
+        <span>Сортировка</span>
+      </div>
+      ${filterSection('', [
+        ['recommended', 'По релевантности', 'Лучшие совпадения'],
+        ['distance', 'По расстоянию', 'Ближе к вам'],
+        ['rating', 'По рейтингу', 'Сначала лучшие оценки'],
+        ['price', 'По цене', 'Сначала дешевле'],
+        ['popular', 'По популярности', 'Чаще сохраняют']
+      ].map(([value, label, meta]) => filterOption({ label, meta, active: current === value, action: 'venue-sort', value })).join(''))}
+      <div class="filter-sheet-footer is-single">
+        <button class="button button-primary" type="button" data-action="filters-done">Применить</button>
+      </div>
+    </div>
+  `;
+}
+
+function refreshFilterSheet(scope) {
+  if (!dom.sheetPanel?.classList.contains('is-filter-sheet')) return;
+  dom.sheetContent.innerHTML = scope === 'games' ? gamesFiltersSheet() : venuesFiltersSheet();
 }
 
 
@@ -997,11 +1538,7 @@ function renderEmptyGames() {
 function createGameSheet({ state, defaultDate }) {
   return `
     <div class="sheet-state" data-sheet-state="form">
-      <div class="sheet-heading">
-        <span class="eyebrow">Новая игра</span>
-        <h2>Создать игру</h2>
-        <p>Заполните ключевые детали, чтобы игроки сразу понимали формат и условия.</p>
-      </div>
+      ${sheetHeader('Новая игра', 'Создать игру', 'Заполните ключевые детали, чтобы игроки сразу понимали формат и условия.')}
       <form id="create-game-form" class="form-grid" novalidate>
         <label class="field">Название<input name="title" required placeholder="Например, Футбол вечером"></label>
         <div class="form-pair">
@@ -1059,115 +1596,111 @@ function gameDetailSheet(game) {
   const status = getGameStatus(game);
   const players = game.players || [];
   return `
-    <img class="sheet-hero" src="${game.image}" alt="${escapeAttr(game.title)}">
-    <div class="sheet-heading">
-      <span class="eyebrow">${escapeHtml(game.sport)} · ${escapeHtml(game.format)}</span>
-      <h2>${escapeHtml(game.title)}</h2>
-      <p>${escapeHtml(game.description)}</p>
-    </div>
-    <div class="stats-grid detail-grid">
-      ${statCard('Когда', formatGameDate(game))}
-      ${statCard('Место', game.place)}
-      ${statCard('Состав', `${game.current}/${game.max}`)}
-      ${statCard('Цена', formatPrice(game.price))}
-      ${statCard('Уровень', game.level)}
-      ${statCard('Статус', status.label)}
-    </div>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <div><span class="eyebrow">Организатор</span><h3>${escapeHtml(game.organizer)}</h3></div>
-        <span class="meta-pill">Рейтинг ${game.rating}</span>
+    <div class="detail-sheet game-detail-sheet">
+      <div class="detail-scroll-body">
+        ${detailPhotoSlider(getGameDetailPhotos(game), game.title, `${game.sport} · ${game.place}`)}
+        ${sheetHeader(`${game.sport} · ${game.format}`, game.title, game.description)}
+        <div class="stats-grid detail-grid">
+          ${statCard('Когда', formatGameDate(game))}
+          ${statCard('Место', game.place)}
+          ${statCard('Состав', `${game.current}/${game.max}`)}
+          ${statCard('Цена', formatPrice(game.price))}
+          ${statCard('Уровень', game.level)}
+          ${statCard('Статус', status.label)}
+        </div>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <div><span class="eyebrow">Организатор</span><h3>${escapeHtml(game.organizer)}</h3></div>
+            <span class="meta-pill">Рейтинг ${game.rating}</span>
+          </div>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <h3>Площадка</h3>
+            <span class="meta-pill">${escapeHtml(game.distance || 'рядом')}</span>
+          </div>
+          <p class="detail-copy">${escapeHtml(game.place)} · м. ${escapeHtml(game.metro)} · ${escapeHtml(game.district)}</p>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <h3>Игроки</h3>
+            <span class="meta-pill">${game.current}/${game.max}</span>
+          </div>
+          <div class="player-chip-grid">
+            ${players.length ? players.map((name) => `<span>${escapeHtml(name)}</span>`).join('') : '<span>Список появится после подключения backend</span>'}
+          </div>
+        </section>
+        <section class="section-card flat">
+          <div class="game-social-grid">
+            <button type="button" data-action="open-game-chat"><strong>Чат игры</strong><span>${game.chat || 0} сообщений</span></button>
+            <button type="button" data-action="open-game-chat"><strong>Комментарии</strong><span>${game.comments || 0} обсуждений</span></button>
+          </div>
+        </section>
       </div>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <h3>Площадка</h3>
-        <span class="meta-pill">${escapeHtml(game.distance || 'рядом')}</span>
+      <div class="card-actions">
+        <button class="button button-primary" type="button" data-action="join-game" data-id="${game.id}" ${game.current >= game.max && !game.joined ? 'disabled' : ''}>${game.joined ? 'Выйти из игры' : 'Участвовать'}</button>
+        <button class="detail-favorite-button ${game.favorite ? 'is-active' : ''}" type="button" data-action="favorite-game" data-id="${game.id}" aria-label="${game.favorite ? 'Убрать из избранного' : 'Добавить в избранное'}">
+          <img src="./icons/favorite.png" alt="" aria-hidden="true">
+        </button>
       </div>
-      <p class="detail-copy">${escapeHtml(game.place)} · м. ${escapeHtml(game.metro)} · ${escapeHtml(game.district)}</p>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <h3>Игроки</h3>
-        <span class="meta-pill">${game.current}/${game.max}</span>
-      </div>
-      <div class="player-chip-grid">
-        ${players.length ? players.map((name) => `<span>${escapeHtml(name)}</span>`).join('') : '<span>Список появится после подключения backend</span>'}
-      </div>
-    </section>
-    <section class="section-card flat">
-      <div class="game-social-grid">
-        <button type="button" data-action="open-game-chat"><strong>Чат игры</strong><span>${game.chat || 0} сообщений</span></button>
-        <button type="button" data-action="open-game-chat"><strong>Комментарии</strong><span>${game.comments || 0} обсуждений</span></button>
-      </div>
-    </section>
-    <div class="card-actions">
-      <button class="button button-secondary" type="button" data-action="favorite-game" data-id="${game.id}">${game.favorite ? 'В избранном' : 'Сохранить'}</button>
-      <button class="button button-primary" type="button" data-action="join-game" data-id="${game.id}" ${game.current >= game.max && !game.joined ? 'disabled' : ''}>${game.joined ? 'Выйти из игры' : 'Участвовать'}</button>
     </div>
   `;
 }
 
 function venueDetailSheet(venue) {
   return `
-    <img class="sheet-hero" src="${venue.photo}" alt="${escapeAttr(venue.name)}">
-    <div class="sheet-heading">
-      <span class="eyebrow">${escapeHtml(venue.sport)} · ${escapeHtml(venue.label)}</span>
-      <h2>${escapeHtml(venue.name)}</h2>
-      <p>${escapeHtml(venue.description)}</p>
-    </div>
-    <div class="stats-grid detail-grid">
-      ${statCard('Цена', venue.price === 0 ? 'Бесплатно' : `${formatPrice(venue.price)}/ч`)}
-      ${statCard('Метро', venue.metro)}
-      ${statCard('Рейтинг', venue.rating)}
-      ${statCard('Тип', venue.indoor ? 'В помещении' : 'Открытая')}
-    </div>
-    <section class="venue-gallery">
-      <img src="${venue.photo}" alt="">
-      <img src="${venue.photo}" alt="">
-      <img src="${venue.photo}" alt="">
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact"><h3>Описание</h3></div>
-      <p class="detail-copy">${escapeHtml(venue.description)}</p>
-      <div class="chip-scroll wrap">
-        <span class="meta-pill">${escapeHtml(venue.distance || 'рядом')}</span>
-        <span class="meta-pill">${escapeHtml(venue.surface || 'покрытие')}</span>
-        <span class="meta-pill">${escapeHtml(venue.size || 'размер')}</span>
-        <span class="meta-pill">${escapeHtml(venue.freeTime || 'свободное время')}</span>
+    <div class="detail-sheet venue-detail-sheet">
+      <div class="detail-scroll-body">
+        ${detailPhotoSlider(getVenueDetailPhotos(venue), venue.name, `${venue.sport} · ${venue.label}`)}
+        ${sheetHeader(`${venue.sport} · ${venue.label}`, venue.name, venue.description)}
+        <div class="stats-grid detail-grid">
+          ${statCard('Цена', venue.price === 0 ? 'Бесплатно' : `${formatPrice(venue.price)}/ч`)}
+          ${statCard('Метро', venue.metro)}
+          ${statCard('Рейтинг', venue.rating)}
+          ${statCard('Тип', venue.indoor ? 'В помещении' : 'Открытая')}
+        </div>
+        <section class="section-card flat">
+          <div class="section-header compact"><h3>Описание</h3></div>
+          <p class="detail-copy">${escapeHtml(venue.description)}</p>
+          <div class="chip-scroll wrap">
+            <span class="meta-pill">${escapeHtml(venue.distance || 'рядом')}</span>
+            <span class="meta-pill">${escapeHtml(venue.surface || 'покрытие')}</span>
+            <span class="meta-pill">${escapeHtml(venue.size || 'размер')}</span>
+            <span class="meta-pill">${escapeHtml(venue.freeTime || 'свободное время')}</span>
+          </div>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <h3>Отзывы</h3>
+            <span class="meta-pill">${venue.reviews || 0} отзывов</span>
+          </div>
+          <p class="detail-copy">Игроки отмечают удобное расположение, чистые раздевалки и стабильное освещение вечером.</p>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact"><h3>Расписание</h3></div>
+          <div class="schedule-grid">
+            ${(venue.schedule || []).map((slot) => `<span>${escapeHtml(slot)}</span>`).join('')}
+          </div>
+        </section>
+        <div class="chip-scroll wrap">${(venue.amenities || []).map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
+        <section class="section-card flat">
+          <div class="section-header compact"><h3>Похожие площадки</h3></div>
+          <p class="detail-copy">Еще 4 площадки с похожей ценой и доступным временем рядом с вашим районом.</p>
+        </section>
       </div>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <h3>Отзывы</h3>
-        <span class="meta-pill">${venue.reviews || 0} отзывов</span>
+      <div class="card-actions">
+        <button class="button button-primary" type="button" data-action="book-selected-venue">Забронировать</button>
+        <button class="detail-favorite-button ${venue.favorite ? 'is-active' : ''}" type="button" data-action="favorite-venue" data-id="${venue.id}" aria-label="${venue.favorite ? 'Убрать из избранного' : 'Добавить в избранное'}">
+          <img src="./icons/favorite.png" alt="" aria-hidden="true">
+        </button>
       </div>
-      <p class="detail-copy">Игроки отмечают удобное расположение, чистые раздевалки и стабильное освещение вечером.</p>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact"><h3>Расписание</h3></div>
-      <div class="schedule-grid">
-        ${(venue.schedule || []).map((slot) => `<span>${escapeHtml(slot)}</span>`).join('')}
-      </div>
-    </section>
-    <div class="chip-scroll wrap">${(venue.amenities || []).map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
-    <section class="section-card flat">
-      <div class="section-header compact"><h3>Похожие площадки</h3></div>
-      <p class="detail-copy">Еще 4 площадки с похожей ценой и доступным временем рядом с вашим районом.</p>
-    </section>
-    <div class="card-actions">
-      <button class="button button-secondary" type="button" data-action="favorite-venue" data-id="${venue.id}">${venue.favorite ? 'В избранном' : 'Сохранить'}</button>
-      <button class="button button-primary" type="button" data-action="book-selected-venue">Забронировать</button>
     </div>
   `;
 }
 
 function teamRequestsSheet(team) {
   return `
-    <div class="sheet-heading">
-      <span class="eyebrow">${escapeHtml(team.name)}</span>
-      <h2>Заявки и приглашения</h2>
-    </div>
+    ${sheetHeader(team.name, 'Заявки и приглашения')}
     ${team.requests.length ? team.requests.map(([name, meta]) => `
       <div class="list-row">
         <div><strong>${escapeHtml(name)}</strong><span>${escapeHtml(meta)}</span></div>
@@ -1178,24 +1711,109 @@ function teamRequestsSheet(team) {
 }
 
 function notificationsSheet(notifications) {
+  const unreadCount = notifications.filter((item) => item.unread).length;
   return `
-    <div class="sheet-heading">
-      <span class="eyebrow">SCORE</span>
-      <h2>Уведомления</h2>
-      <p>Игры, площадки и заявки, которые требуют внимания.</p>
-    </div>
-    <div class="notification-list">
-      ${notifications.length ? notifications.map((item) => `
-        <article class="notification-card ${item.unread ? 'is-unread' : ''}">
-          <div>
-            <span>${escapeHtml(item.type)}</span>
-            <small>${escapeHtml(item.time)}</small>
-          </div>
-          <strong>${escapeHtml(item.title)}</strong>
-          <p>${escapeHtml(item.text)}</p>
-        </article>
-      `).join('') : emptyState('Пока тихо', 'Когда появятся игры, заявки или обновления площадок, они будут здесь.')}
-    </div>
+    <section class="notifications-sheet">
+      ${sheetHeader('Уведомления')}
+      <div class="notification-summary-card">
+        <span>Сегодня</span>
+        <strong>${unreadCount ? `${unreadCount} новых события` : 'Все спокойно'}</strong>
+        <p>Игры, площадки и заявки, которые требуют внимания.</p>
+      </div>
+      <div class="notification-list">
+        ${notifications.length ? notifications.map((item) => `
+          <article class="notification-card ${item.unread ? 'is-unread' : ''}">
+            <div>
+              <span>${escapeHtml(item.type)}</span>
+              <small>${escapeHtml(item.time)}</small>
+            </div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <p>${escapeHtml(item.text)}</p>
+          </article>
+        `).join('') : emptyState('Пока тихо', 'Когда появятся игры, заявки или обновления площадок, они будут здесь.')}
+      </div>
+    </section>
+  `;
+}
+
+function normalizeCitySearch(value) {
+  return String(value || '').trim().toLowerCase().replaceAll('ё', 'е');
+}
+
+function cityMatchesQuery(city, query) {
+  if (!query) return true;
+  return normalizeCitySearch(city).includes(query);
+}
+
+function cityOption(city, current) {
+  return `
+    <button class="location-option ${current === city ? 'is-active' : ''}" type="button" data-action="location-select" data-value="${escapeAttr(city)}">
+      <span>${escapeHtml(city)}</span>
+      <i aria-hidden="true"></i>
+    </button>
+  `;
+}
+
+function renderCityGroup(title, cities, current, featured = false) {
+  if (!cities.length) return '';
+  return `
+    <section class="location-city-group ${featured ? 'is-featured' : ''}">
+      <h3>${escapeHtml(title)}</h3>
+      <div class="location-option-list">
+        ${cities.map((city) => cityOption(city, current)).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderLocationCityList(query = '', letter = 'Все') {
+  const current = state.profile.city || 'Москва';
+  const normalizedQuery = normalizeCitySearch(query);
+  const activeLetter = letter || 'Все';
+  if (activeLetter !== 'Все') {
+    const cities = RUSSIAN_CITIES
+      .filter((city) => city[0]?.toUpperCase() === activeLetter)
+      .filter((city) => cityMatchesQuery(city, normalizedQuery));
+    return renderCityGroup(activeLetter, cities, current).trim() || '<p class="location-empty">Город не найден</p>';
+  }
+  const millionCities = MILLION_PLUS_CITIES.filter((city) => cityMatchesQuery(city, normalizedQuery));
+  const otherCities = RUSSIAN_CITIES
+    .filter((city) => !MILLION_PLUS_CITIES.includes(city))
+    .filter((city) => cityMatchesQuery(city, normalizedQuery));
+  const grouped = otherCities.reduce((groups, city) => {
+    const letter = city[0]?.toUpperCase() || '';
+    if (!groups[letter]) groups[letter] = [];
+    groups[letter].push(city);
+    return groups;
+  }, {});
+  const alphabetGroups = Object.keys(grouped)
+    .sort((a, b) => a.localeCompare(b, 'ru'))
+    .map((letter) => renderCityGroup(letter, grouped[letter], current))
+    .join('');
+  const html = `
+    ${renderCityGroup('Города-миллионники', millionCities, current, true)}
+    ${alphabetGroups}
+  `;
+  return html.trim() || '<p class="location-empty">Город не найден</p>';
+}
+
+function locationSheet() {
+  return `
+    <section class="location-sheet">
+      ${sheetHeader('Город')}
+      <label class="location-search">
+        <img src="./icons/поиск.png" alt="" aria-hidden="true">
+        <input type="search" value="" placeholder="Поиск города" data-city-search autocomplete="off">
+      </label>
+      <div class="location-letter-rail" aria-label="Фильтр по алфавиту">
+        ${CITY_ALPHABET.map((letter, index) => `
+          <button class="${index === 0 ? 'is-active' : ''}" type="button" data-action="city-letter" data-value="${escapeAttr(letter)}">${escapeHtml(letter)}</button>
+        `).join('')}
+      </div>
+      <div class="location-city-list" data-city-list data-letter="Все">
+        ${renderLocationCityList()}
+      </div>
+    </section>
   `;
 }
 
@@ -1214,25 +1832,32 @@ function profileDetailSheet(profile, editing = false) {
   return `
     <${tag}${formAttrs} class="profile-detail-card ${editing ? 'is-editing' : ''}">
       <div class="profile-sticky-title" data-profile-sticky-title>Профиль игрока</div>
-      <div class="profile-detail-avatar-row">
-        <button class="profile-detail-action is-primary" type="button" data-action="share-profile" aria-label="Поделиться профилем">
-          <img src="./icons/share.png" alt="" aria-hidden="true">
-        </button>
-        <button class="profile-detail-avatar-button" type="button" data-action="${avatarAction}" aria-label="${editing ? 'Сменить аватар' : 'Открыть аватар'}">
-          <img class="profile-detail-avatar" src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
-        </button>
-        <button class="profile-detail-action" type="button" data-action="edit-profile" aria-label="Редактировать профиль">
-          <img src="./icons/edit.png" alt="" aria-hidden="true">
-        </button>
-      </div>
-      <div class="profile-detail-heading">
-        ${editing ? `
-          <label class="profile-inline-field is-name">Имя и фамилия<input name="name" value="${escapeAttr(profile.name)}"></label>
-          <label class="profile-inline-field is-nickname">ID игрока<input name="nickname" value="${escapeAttr(nickname)}"></label>
-        ` : `
-          <h2>${escapeHtml(profile.name)}</h2>
-          <p>${escapeHtml(nickname)}</p>
-        `}
+      <div class="profile-detail-hero">
+        <div class="profile-detail-hero-top">
+          <span>${editing ? 'Редактирование' : 'Профиль игрока'}</span>
+          <b>${escapeHtml(profile.level || 'Любитель')}</b>
+        </div>
+        <div class="profile-detail-avatar-row">
+          <button class="profile-detail-action ${editing ? '' : 'is-primary'}" type="button" ${editing ? 'data-close-sheet' : 'data-action="share-profile"'} aria-label="${editing ? 'Закрыть' : 'Поделиться профилем'}">
+            <img src="./icons/${editing ? 'close' : 'share'}.png" alt="" aria-hidden="true">
+          </button>
+          <button class="profile-detail-avatar-button" type="button" data-action="${avatarAction}" aria-label="${editing ? 'Сменить аватар' : 'Открыть аватар'}">
+            <img class="profile-detail-avatar" src="${getAvatarSrc(profile.avatarId, profile.avatarDataUrl)}" alt="">
+            ${editing ? '<span>Сменить фото</span>' : ''}
+          </button>
+          <button class="profile-detail-action" type="button" data-action="${editing ? 'save-profile' : 'edit-profile'}" aria-label="${editing ? 'Сохранить профиль' : 'Редактировать профиль'}">
+            <img src="./icons/${editing ? 'check' : 'edit'}.png" alt="" aria-hidden="true">
+          </button>
+        </div>
+        <div class="profile-detail-heading">
+          ${editing ? `
+            <label class="profile-inline-field is-name">Имя и фамилия<input name="name" value="${escapeAttr(profile.name)}"></label>
+            <label class="profile-inline-field is-nickname">ID игрока<input name="nickname" value="${escapeAttr(nickname)}"></label>
+          ` : `
+            <h2>${escapeHtml(profile.name)}</h2>
+            <p>${escapeHtml(nickname)}</p>
+          `}
+        </div>
       </div>
       <div class="profile-detail-metrics">
         ${statCard('Игр сыграно', profile.stats.games)}
@@ -1253,7 +1878,10 @@ function profileDetailSheet(profile, editing = false) {
       </div>
       ${editing ? `
         <label class="profile-detail-about is-editing">О себе<textarea name="about">${escapeHtml(profile.about)}</textarea></label>
-        <button class="button button-primary button-full profile-submit" type="button" data-action="save-profile">Сохранить</button>
+        <div class="profile-edit-footer">
+          <button class="button button-secondary" type="button" data-close-sheet>Отменить</button>
+          <button class="button button-primary profile-submit" type="button" data-action="save-profile">Сохранить</button>
+        </div>
       ` : `<p class="profile-detail-about">${escapeHtml(profile.about)}</p>`}
     </${tag}>
   `;
@@ -1389,71 +2017,19 @@ function renderHome({ state, nextGame, home }) {
 }
 
 function renderGamesScreen({ state, games }) {
-  const gameSports = ['Все', ...uniqueSports(state.games)];
-  const gameLevels = ['Все', ...Array.from(new Set(state.games.map((game) => game.level).filter(Boolean)))];
   return `
-    <div class="screen-stack">
-      ${searchBar({ scope: 'games', value: state.filters.games.query, placeholder: 'Поиск игр', buttonLabel: 'Создать', buttonAction: 'create-game' })}
-      <div class="toolbar-row">
-        <div class="chip-scroll">
-          ${chip({ label: 'Все', active: allGameFiltersOff(state.filters.games), action: 'game-filter', value: 'reset' })}
-          ${chip({ label: 'Сегодня', active: state.filters.games.today, action: 'game-filter', value: 'today' })}
-          ${chip({ label: 'Бесплатно', active: state.filters.games.free, action: 'game-filter', value: 'free' })}
-          ${chip({ label: 'С тренером', active: state.filters.games.coach, action: 'game-filter', value: 'coach' })}
-          ${chip({ label: 'Рядом', active: state.filters.games.nearby, action: 'game-filter', value: 'nearby' })}
-        </div>
+    <div class="screen-stack catalog-screen">
+      ${searchBar({ scope: 'games', value: state.filters.games.query, placeholder: 'Поиск игр' })}
+      ${renderGamesFilterRail()}
+      <div data-catalog-results="games">
+        ${renderGamesResults(games)}
       </div>
-      <div class="filter-groups">
-        <div>
-          <span>Вид спорта</span>
-          <div class="chip-scroll">${gameSports.map((sport) => chip({ label: sport, active: state.filters.games.sport === sport, action: 'game-filter', value: `sport:${sport}` })).join('')}</div>
-        </div>
-        <div>
-          <span>Дата</span>
-          <div class="chip-scroll">
-            ${[
-              ['any', 'Любая'],
-              ['today', 'Сегодня'],
-              ['week', 'На неделе']
-            ].map(([value, label]) => chip({ label, active: state.filters.games.date === value, action: 'game-filter', value: `date:${value}` })).join('')}
-          </div>
-        </div>
-        <div>
-          <span>Время</span>
-          <div class="chip-scroll">
-            ${[
-              ['any', 'Любое'],
-              ['morning', 'Утро'],
-              ['evening', 'Вечер']
-            ].map(([value, label]) => chip({ label, active: state.filters.games.time === value, action: 'game-filter', value: `time:${value}` })).join('')}
-          </div>
-        </div>
-        <div>
-          <span>Расстояние</span>
-          <div class="chip-scroll">
-            ${[
-              ['any', 'Любое'],
-              ['near', 'До 2 км'],
-              ['five', 'До 5 км']
-            ].map(([value, label]) => chip({ label, active: state.filters.games.distance === value, action: 'game-filter', value: `distance:${value}` })).join('')}
-          </div>
-        </div>
-        <div>
-          <span>Уровень и места</span>
-          <div class="chip-scroll">
-            ${gameLevels.map((level) => chip({ label: level, active: state.filters.games.level === level, action: 'game-filter', value: `level:${level}` })).join('')}
-            ${chip({ label: 'Есть места', active: state.filters.games.slots === 'open', action: 'game-filter', value: 'slots:open' })}
-          </div>
-        </div>
-        <div>
-          <span>Цена</span>
-          <div class="chip-scroll">
-            ${chip({ label: 'Любая', active: state.filters.games.price === 'any', action: 'game-filter', value: 'price:any' })}
-            ${chip({ label: 'Бесплатно', active: state.filters.games.price === 'free', action: 'game-filter', value: 'price:free' })}
-            ${chip({ label: 'Платные', active: state.filters.games.price === 'paid', action: 'game-filter', value: 'price:paid' })}
-          </div>
-        </div>
-      </div>
+    </div>
+  `;
+}
+
+function renderGamesResults(games) {
+  return `
       <div class="section-header compact">
         <span class="result-label">Найдено: ${games.length}</span>
         ${viewToggle(state.filters.games.view)}
@@ -1462,88 +2038,23 @@ function renderGamesScreen({ state, games }) {
       <div class="list-stack">
         ${games.length ? games.map(renderGameCard).join('') : emptyState('Игр не найдено', 'Попробуйте снять фильтр или создать свою игру.', 'Создать игру', 'create-game')}
       </div>
-    </div>
   `;
 }
 
 function renderVenuesScreen({ state, venues }) {
-  const sports = ['Все', ...uniqueSports(state.venues)];
-  const locations = ['Все', ...Array.from(new Set(state.venues.flatMap((venue) => [venue.district, venue.metro]).filter(Boolean)))];
-  const amenities = ['Все', ...Array.from(new Set(state.venues.flatMap((venue) => venue.amenities || [])))];
-  const surfaces = ['Все', ...Array.from(new Set(state.venues.map((venue) => venue.surface).filter(Boolean)))];
-  const sizes = ['Все', ...Array.from(new Set(state.venues.map((venue) => venue.size).filter(Boolean)))];
   return `
-    <div class="screen-stack">
+    <div class="screen-stack catalog-screen">
       ${searchBar({ scope: 'venues', value: state.filters.venues.query, placeholder: 'Поиск площадок' })}
-      <div class="chip-scroll filter-rail">
-        ${chip({ label: 'Все', active: allVenueFiltersOff(state.filters.venues), action: 'venue-filter', value: 'reset' })}
-        ${chip({ label: 'Новые', active: state.filters.venues.isNew, action: 'venue-filter', value: 'isNew' })}
-        ${chip({ label: 'Бесплатно', active: state.filters.venues.free, action: 'venue-filter', value: 'free' })}
-        ${chip({ label: 'Избранное', active: state.filters.venues.favorite, action: 'venue-filter', value: 'favorite' })}
-        ${chip({ label: 'В помещении', active: state.filters.venues.indoor, action: 'venue-filter', value: 'indoor' })}
-        ${chip({ label: 'Открытая', active: state.filters.venues.open, action: 'venue-filter', value: 'open' })}
+      ${renderVenuesFilterRail()}
+      <div data-catalog-results="venues">
+        ${renderVenuesResults(venues)}
       </div>
-      <div class="filter-groups">
-        <div>
-          <span>Вид спорта</span>
-          <div class="chip-scroll">${sports.map((sport) => chip({ label: sport, active: state.filters.venues.sport === sport, action: 'venue-filter', value: `sport:${sport}` })).join('')}</div>
-        </div>
-        <div>
-          <span>Стоимость</span>
-          <div class="chip-scroll">
-            ${[
-              ['any', 'Любая'],
-              ['free', 'Бесплатно'],
-              ['low', 'до 2 500 ₽'],
-              ['mid', '2 500-5 000 ₽'],
-              ['paid', 'Платные']
-            ].map(([value, label]) => chip({ label, active: state.filters.venues.price === value, action: 'venue-filter', value: `price:${value}` })).join('')}
-          </div>
-        </div>
-        <div>
-          <span>Расстояние</span>
-          <div class="chip-scroll">
-            ${[
-              ['any', 'Любое'],
-              ['near', 'До 2 км'],
-              ['five', 'До 5 км']
-            ].map(([value, label]) => chip({ label, active: state.filters.venues.distance === value, action: 'venue-filter', value: `distance:${value}` })).join('')}
-          </div>
-        </div>
-        <div>
-          <span>Покрытие</span>
-          <div class="chip-scroll">${surfaces.map((surface) => chip({ label: surface, active: state.filters.venues.surface === surface, action: 'venue-filter', value: `surface:${surface}` })).join('')}</div>
-        </div>
-        <div>
-          <span>Освещение</span>
-          <div class="chip-scroll">
-            ${[
-              ['any', 'Любое'],
-              ['yes', 'Есть свет']
-            ].map(([value, label]) => chip({ label, active: state.filters.venues.lighting === value, action: 'venue-filter', value: `lighting:${value}` })).join('')}
-          </div>
-        </div>
-        <div>
-          <span>Размер площадки</span>
-          <div class="chip-scroll">${sizes.map((size) => chip({ label: size, active: state.filters.venues.size === size, action: 'venue-filter', value: `size:${size}` })).join('')}</div>
-        </div>
-        <div>
-          <span>Рейтинг и оплата</span>
-          <div class="chip-scroll">
-            ${chip({ label: '4.7+', active: state.filters.venues.rating === 'high', action: 'venue-filter', value: 'rating:high' })}
-            ${chip({ label: 'Бесплатные', active: state.filters.venues.paid === 'free', action: 'venue-filter', value: 'paid:free' })}
-            ${chip({ label: 'Платные', active: state.filters.venues.paid === 'paid', action: 'venue-filter', value: 'paid:paid' })}
-          </div>
-        </div>
-        <div>
-          <span>Расположение</span>
-          <div class="chip-scroll">${locations.map((location) => chip({ label: location, active: state.filters.venues.location === location, action: 'venue-filter', value: `location:${location}` })).join('')}</div>
-        </div>
-        <div>
-          <span>Удобства</span>
-          <div class="chip-scroll">${amenities.map((amenity) => chip({ label: amenity, active: state.filters.venues.amenity === amenity, action: 'venue-filter', value: `amenity:${amenity}` })).join('')}</div>
-        </div>
-      </div>
+    </div>
+  `;
+}
+
+function renderVenuesResults(venues) {
+  return `
       <div class="section-header compact">
         <span class="result-label">Найдено: ${venues.length}</span>
         ${viewToggle(state.filters.venues.view, 'venue-view')}
@@ -1552,7 +2063,6 @@ function renderVenuesScreen({ state, venues }) {
       <div class="list-stack">
         ${venues.length ? venues.map(renderVenueCard).join('') : emptyState('Площадок не найдено', 'Измените фильтры или посмотрите соседний район.', 'Сбросить фильтры', 'venue-filter', 'reset')}
       </div>
-    </div>
   `;
 }
 
@@ -1729,9 +2239,9 @@ function renderVenueMapPreview(venues) {
 function allGameFiltersOff(filters) {
   return !filters.today
     && !filters.free
-    && !filters.coach
     && !filters.nearby
-    && !filters.favorite
+    && !filters.openSlots
+    && !filters.almostFull
     && filters.sport === 'Все'
     && filters.date === 'any'
     && filters.time === 'any'
@@ -1742,21 +2252,19 @@ function allGameFiltersOff(filters) {
 }
 
 function allVenueFiltersOff(filters) {
-  return !filters.free
+  return !filters.nearby
+    && !filters.free
+    && !filters.availableToday
     && !filters.favorite
     && !filters.indoor
-    && !filters.open
-    && !filters.isNew
-    && filters.sport === 'Все'
+    && getVenueSportValues(filters).length === 0
     && filters.price === 'any'
-    && filters.location === 'Все'
-    && filters.amenity === 'Все'
+    && (filters.priceMin || '') === ''
+    && (filters.priceMax || '') === ''
     && filters.distance === 'any'
-    && filters.surface === 'Все'
-    && filters.lighting === 'any'
-    && filters.size === 'Все'
-    && filters.rating === 'any'
-    && filters.paid === 'any';
+    && Number(filters.distanceKm || 100) >= 100
+    && filters.type === 'any'
+    && filters.size === 'Все';
 }
 
 function renderMiniGameTile(game) {
@@ -1894,6 +2402,7 @@ const dom = {
   greeting: document.querySelector('#greeting'),
   screens: Array.from(document.querySelectorAll('.app-screen')),
   navButtons: Array.from(document.querySelectorAll('[data-nav]')),
+  floatingCreateGame: document.querySelector('#floating-create-game'),
   profileShortcut: document.querySelector('#profile-shortcut'),
   notificationsShortcut: document.querySelector('#notifications-shortcut'),
   sheet: document.querySelector('#sheet'),
@@ -1905,6 +2414,7 @@ const dom = {
 const state = hydrateState();
 const SHEET_CLOSE_ANIMATION_MS = 320;
 let sheetCloseTimer = 0;
+let venueFilterDraft = null;
 
 init();
 
@@ -1969,6 +2479,19 @@ function setTelegramViewportVars() {
   if (viewportHeight > 0) {
     root.style.setProperty('--tg-viewport-height', `${viewportHeight}px`);
   }
+  const safeTop = Math.max(
+    0,
+    Number(webApp?.safeAreaInset?.top || 0),
+    Number(webApp?.contentSafeAreaInset?.top || 0)
+  );
+  const isTelegramEmbedded = Boolean(
+    webApp?.initData ||
+    (webApp?.initDataUnsafe && Object.keys(webApp.initDataUnsafe).length) ||
+    new URLSearchParams(window.location.search).has('tgWebAppPlatform') ||
+    /Telegram/i.test(navigator.userAgent)
+  );
+  const telegramChromeOffset = isTelegramEmbedded ? Math.max(safeTop, webApp.isFullscreen ? 0 : 88) : 0;
+  root.style.setProperty('--tg-top-offset', `${telegramChromeOffset}px`);
 }
 
 function hydrateState() {
@@ -1986,17 +2509,26 @@ function hydrateState() {
       venues: {
         query: '',
         sport: 'Все',
+        sports: [],
         price: 'any',
+        priceMin: '',
+        priceMax: '',
+        type: 'any',
         location: 'Все',
         amenity: 'Все',
         distance: 'any',
+        distanceKm: 100,
         surface: 'Все',
         lighting: 'any',
         size: 'Все',
         rating: 'any',
         paid: 'any',
+        sort: 'recommended',
+        quickPinned: '',
         view: 'list',
+        nearby: false,
         free: false,
+        availableToday: false,
         favorite: false,
         indoor: false,
         open: false,
@@ -2016,6 +2548,10 @@ function hydrateState() {
         coach: false,
         nearby: false,
         favorite: false,
+        openSlots: false,
+        almostFull: false,
+        sort: 'recommended',
+        quickPinned: '',
         view: 'list'
       }
     }
@@ -2030,7 +2566,7 @@ function hydrateState() {
       activeScreen: saved.activeScreen === 'favorites' ? 'progress' : saved.activeScreen,
       profile: mergeProfile(saved.profile),
       notifications: Array.isArray(saved.notifications) ? saved.notifications : fallback.notifications,
-      home: { ...fallback.home, ...(saved.home || {}) },
+      home: { ...fallback.home, ...(saved.home || {}), quickActions: fallback.home.quickActions },
       venues: mergeById(fallback.venues, saved.venues),
       games: mergeById(fallback.games, saved.games).map(withGameDate),
       teams: mergeById(fallback.teams, saved.teams),
@@ -2083,7 +2619,7 @@ function mergeById(base, saved) {
 
 function mergeFilters(fallback, saved = {}) {
   return {
-    venues: { ...fallback.venues, ...(saved.venues || {}) },
+    venues: normalizeVenueFilters({ ...fallback.venues, ...(saved.venues || {}) }),
     games: { ...fallback.games, ...(saved.games || {}) }
   };
 }
@@ -2152,10 +2688,123 @@ function handleClick(event) {
 
   if (actionName === 'nav' && value) navigate(value);
   if (actionName === 'profile-shortcut') navigate('profile');
-  if (actionName === 'game-filter') toggleFilter('games', value);
-  if (actionName === 'venue-filter') toggleFilter('venues', value);
-  if (actionName === 'game-view') state.filters.games.view = value || 'list';
-  if (actionName === 'venue-view') state.filters.venues.view = value || 'list';
+  if (actionName === 'open-game-filters') {
+    openSheet(gamesFiltersSheet());
+    return;
+  }
+  if (actionName === 'open-venue-filters') {
+    venueFilterDraft = normalizeVenueFilters(clone(state.filters.venues));
+    openSheet(venuesFiltersSheet());
+    return;
+  }
+  if (actionName === 'open-game-sort') {
+    openSheet(gamesSortSheet());
+    return;
+  }
+  if (actionName === 'open-venue-sort') {
+    openSheet(venuesSortSheet());
+    return;
+  }
+  if (actionName === 'open-location-sheet') {
+    openSheet(locationSheet());
+    return;
+  }
+  if (actionName === 'city-letter' && value) {
+    const list = dom.sheetContent?.querySelector('[data-city-list]');
+    const search = dom.sheetContent?.querySelector('[data-city-search]');
+    dom.sheetContent?.querySelectorAll('[data-action="city-letter"]').forEach((button) => {
+      button.classList.toggle('is-active', button === action);
+    });
+    if (list instanceof HTMLElement) {
+      list.dataset.letter = value;
+      list.innerHTML = renderLocationCityList(search instanceof HTMLInputElement ? search.value : '', value);
+      list.scrollTop = 0;
+    }
+    return;
+  }
+  if (actionName === 'location-select' && value) {
+    state.profile.city = value;
+    if (!state.profile.district || state.profile.district === 'Москва') state.profile.district = value;
+    saveState();
+    renderApp();
+    closeSheet();
+    return;
+  }
+  if (actionName === 'filters-done') {
+    closeSheet();
+    return;
+  }
+  if (actionName === 'apply-venue-filters') {
+    if (venueFilterDraft && hasVenueFilterChanges()) {
+      state.filters.venues = normalizeVenueFilters({ ...state.filters.venues, ...venueFilterDraft });
+      saveState();
+      renderApp();
+    }
+    closeSheet();
+    return;
+  }
+  if (actionName === 'game-sort') {
+    state.filters.games.sort = value || 'recommended';
+    saveState();
+    renderApp();
+    openSheet(gamesSortSheet());
+    return;
+  }
+  if (actionName === 'venue-sort') {
+    state.filters.venues.sort = value || 'recommended';
+    saveState();
+    renderApp();
+    openSheet(venuesSortSheet());
+    return;
+  }
+  if (actionName === 'game-filter') {
+    const railScrollLeft = action.closest('.filter-rail')?.scrollLeft;
+    toggleFilter('games', value);
+    saveState();
+    if (typeof railScrollLeft === 'number') {
+      renderGamesOnly();
+      restoreFilterRailScroll('games', railScrollLeft);
+    } else {
+      renderApp();
+      refreshFilterSheet('games');
+    }
+    return;
+  }
+  if (actionName === 'venue-filter') {
+    const railScrollLeft = action.closest('.filter-rail')?.scrollLeft;
+    toggleFilter('venues', value);
+    saveState();
+    if (typeof railScrollLeft === 'number') {
+      renderVenuesOnly();
+      restoreFilterRailScroll('venues', railScrollLeft);
+    } else {
+      renderApp();
+      refreshFilterSheet('venues');
+    }
+    return;
+  }
+  if (actionName === 'venue-filter-draft') {
+    updateVenueFilterDraft(value);
+    if (value?.startsWith('type:')) {
+      syncVenueTypeSegment();
+      updateVenueApplyButton();
+      return;
+    }
+    refreshVenueFilterDraftSheet();
+    return;
+  }
+  if (actionName === 'game-view') {
+    state.filters.games.view = value || 'list';
+    saveState();
+    renderApp();
+    return;
+  }
+  if (actionName === 'venue-view') {
+    state.filters.venues.view = value || 'list';
+    saveState();
+    renderApp();
+    return;
+  }
   if (actionName === 'find-game') navigate('games');
   if (actionName === 'find-venue') navigate('venues');
   if (actionName === 'book-venue') navigate('venues');
@@ -2200,13 +2849,37 @@ function handleInput(event) {
   if (target.matches('[data-search="games"]')) {
     state.filters.games.query = target.value;
     saveState();
-    renderGamesOnly();
+    renderCatalogResults('games');
   }
 
   if (target.matches('[data-search="venues"]')) {
     state.filters.venues.query = target.value;
     saveState();
-    renderVenuesOnly();
+    renderCatalogResults('venues');
+  }
+
+  if (target.matches('[data-city-search]')) {
+    const list = dom.sheetContent?.querySelector('[data-city-list]');
+    dom.sheetContent?.querySelectorAll('[data-action="city-letter"]').forEach((button) => {
+      button.classList.toggle('is-active', button.dataset.value === 'Все');
+    });
+    if (list instanceof HTMLElement) {
+      list.dataset.letter = 'Все';
+      list.innerHTML = renderLocationCityList(target.value, 'Все');
+      list.scrollTop = 0;
+    }
+  }
+
+  if (target.matches('[data-distance-range="venues"]')) {
+    setVenueDraftDistanceRange(target.value);
+    updateDistanceRangeControl(target);
+    updateVenueApplyButton();
+  }
+
+  if (target.matches('[data-price-bound]')) {
+    const nextPrice = setVenueDraftPriceBound(target.dataset.priceBound, target.value);
+    syncVenuePriceControls(nextPrice);
+    updateVenueApplyButton();
   }
 
   if (target.closest('#create-game-form')) {
@@ -2227,6 +2900,11 @@ function handleChange(event) {
     state.filters.venues.sport = target.value;
     saveState();
     renderVenuesOnly();
+  }
+
+  if (target.matches('[data-distance-range="venues"]')) {
+    setVenueDraftDistanceRange(target.value);
+    refreshVenueFilterDraftSheet();
   }
 
   if (target.matches('[data-team-switch]')) {
@@ -2261,6 +2939,11 @@ function navigate(screen) {
   state.activeScreen = screen;
   saveState();
   renderApp();
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    dom.mobileApp?.scrollTo?.({ top: 0, left: 0, behavior: 'auto' });
+    document.querySelector(`#screen-${screen}`)?.scrollTo?.({ top: 0, left: 0, behavior: 'auto' });
+  });
 }
 
 function renderApp() {
@@ -2268,6 +2951,7 @@ function renderApp() {
   dom.navButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.nav === state.activeScreen));
   if (dom.screenTitle) dom.screenTitle.textContent = screenTitles[state.activeScreen] || 'SCORE PLAY';
   if (dom.screenLocation) dom.screenLocation.textContent = state.profile.city || 'Москва';
+  if (dom.floatingCreateGame) dom.floatingCreateGame.hidden = state.activeScreen !== 'games';
   const avatarImage = dom.profileShortcut?.querySelector('img');
   if (avatarImage) avatarImage.src = getAvatarSrc(state.profile.avatarId, state.profile.avatarDataUrl);
   renderHomeOnly();
@@ -2297,6 +2981,23 @@ function renderProgressOnly() {
 
 function renderVenuesOnly() {
   document.querySelector('#screen-venues').innerHTML = renderVenuesScreen({ state, venues: getFilteredVenues() });
+}
+
+function renderCatalogResults(scope) {
+  const container = document.querySelector(`[data-catalog-results="${scope}"]`);
+  if (!container) {
+    if (scope === 'games') renderGamesOnly();
+    if (scope === 'venues') renderVenuesOnly();
+    return;
+  }
+  container.innerHTML = scope === 'games' ? renderGamesResults(getFilteredGames()) : renderVenuesResults(getFilteredVenues());
+}
+
+function restoreFilterRailScroll(scope, scrollLeft) {
+  requestAnimationFrame(() => {
+    const rail = document.querySelector(`#screen-${scope} .filter-rail`);
+    if (rail) rail.scrollLeft = scrollLeft;
+  });
 }
 
 function renderTeamOnly() {
@@ -2433,23 +3134,14 @@ async function createAchievementShareFile(achievement) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   ctx.fillStyle = '#101318';
-  ctx.font = '800 68px Manrope, Arial, sans-serif';
+  ctx.font = '800 68px Nunito, Arial, sans-serif';
   const titleLines = getWrappedLines(ctx, achievement.title, 920).slice(0, 3);
   drawCenteredLines(ctx, titleLines, width / 2, 620, 82);
 
   ctx.fillStyle = '#5D6F94';
-  ctx.font = '800 38px Manrope, Arial, sans-serif';
+  ctx.font = '800 38px Nunito, Arial, sans-serif';
   const descriptionLines = getWrappedLines(ctx, achievement.text, 820).slice(0, 2);
   drawCenteredLines(ctx, descriptionLines, width / 2, 620 + titleLines.length * 82 + 34, 50);
-
-  ctx.fillStyle = '#3A85FD';
-  ctx.font = '800 34px Manrope, Arial, sans-serif';
-  const inviteLines = getWrappedLines(ctx, 'Залетай в SCORE: найди игру рядом и открой свои достижения', 760).slice(0, 2);
-  drawCenteredLines(ctx, inviteLines, width / 2, 972, 44);
-
-  ctx.fillStyle = '#5D6F94';
-  ctx.font = '700 26px Manrope, Arial, sans-serif';
-  ctx.fillText(getAppShareUrl(), width / 2, 1064);
 
   if (logo) drawContainedImage(ctx, logo, 420, 1150, 240);
 
@@ -2477,7 +3169,7 @@ async function shareAchievement(id) {
     try {
       const file = await createAchievementShareFile(achievement);
       if (file && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-        await navigator.share({ files: [file], title: payload.title });
+        await navigator.share({ files: [file], text: payload.text });
         return;
       }
     } catch (_) {}
@@ -2503,7 +3195,7 @@ async function shareAchievement(id) {
 function getFilteredGames() {
   const filters = state.filters.games;
   const query = normalize(filters.query);
-  return state.games
+  const result = state.games
     .filter((game) => {
       if (query && !normalize([game.title, game.sport, game.place, game.metro, game.district].join(' ')).includes(query)) return false;
       if (filters.sport !== 'Все' && game.sport !== filters.sport) return false;
@@ -2517,47 +3209,64 @@ function getFilteredGames() {
       if (filters.price === 'free' && game.price > 0) return false;
       if (filters.price === 'paid' && game.price === 0) return false;
       if (filters.slots === 'open' && game.current >= game.max) return false;
-      if (filters.today && game.dateOffset !== 0) return false;
-      if (filters.free && game.price > 0) return false;
-      if (filters.coach && !game.coach) return false;
-      if (filters.nearby && !game.nearby) return false;
-      if (filters.favorite && !game.favorite) return false;
+      if (filters.almostFull) {
+        const occupancy = Number(game.current || 0) / Math.max(1, Number(game.max || 1));
+        if (game.current >= game.max || occupancy < 0.7) return false;
+      }
       return true;
-    })
-    .sort((a, b) => new Date(a.startDateTime) - new Date(b.startDateTime));
+    });
+  return sortGames(result, filters.sort);
 }
 
 function getFilteredVenues() {
   const filters = state.filters.venues;
   const query = normalize(filters.query);
-  return state.venues.filter((venue) => {
+  const selectedSports = getVenueSportValues(filters);
+  const priceMin = filters.priceMin !== '' ? Number(filters.priceMin) : null;
+  const priceMax = filters.priceMax !== '' ? Number(filters.priceMax) : null;
+  const result = state.venues.filter((venue) => {
     if (query && !normalize([venue.name, venue.sport, venue.district, venue.metro, venue.address].join(' ')).includes(query)) return false;
-    if (filters.sport !== 'Все' && venue.sport !== filters.sport) return false;
+    if (selectedSports.length && !selectedSports.includes(venue.sport)) return false;
     if (filters.price === 'free' && venue.price > 0) return false;
     if (filters.price === 'low' && venue.price > 2500) return false;
     if (filters.price === 'mid' && (venue.price < 2500 || venue.price > 5000)) return false;
+    if (filters.price === 'high' && venue.price < 5000) return false;
     if (filters.price === 'paid' && venue.price === 0) return false;
+    if (priceMin !== null && Number(venue.price || 0) < priceMin) return false;
+    if (priceMax !== null && Number(venue.price || 0) > priceMax) return false;
     if (filters.distance === 'near' && parseDistance(venue.distance) > 2) return false;
     if (filters.distance === 'five' && parseDistance(venue.distance) > 5) return false;
-    if (filters.surface !== 'Все' && venue.surface !== filters.surface) return false;
-    if (filters.lighting === 'yes' && !(venue.amenities || []).includes('Освещение')) return false;
+    if (filters.distance === 'range' && parseDistance(venue.distance) > clamp(filters.distanceKm || 100, 1, 100)) return false;
+    if (filters.type === 'indoor' && !venue.indoor) return false;
+    if (filters.type === 'open' && venue.indoor) return false;
     if (filters.size !== 'Все' && venue.size !== filters.size) return false;
-    if (filters.rating === 'high' && Number(venue.rating || 0) < 4.7) return false;
-    if (filters.paid === 'free' && venue.price > 0) return false;
-    if (filters.paid === 'paid' && venue.price === 0) return false;
-    if (filters.location !== 'Все' && venue.district !== filters.location && venue.metro !== filters.location) return false;
-    if (filters.amenity !== 'Все' && !venue.amenities.includes(filters.amenity)) return false;
-    if (filters.isNew && venue.label !== 'Новая') return false;
-    if (filters.free && !venue.free && venue.price > 0) return false;
+    if (filters.availableToday && !/сегодня|свобод/i.test(String(venue.nextSlot || ''))) return false;
     if (filters.favorite && !venue.favorite) return false;
-    if (filters.indoor && !venue.indoor) return false;
-    if (filters.open && venue.indoor) return false;
     return true;
   });
+  return sortVenues(result, filters.sort);
 }
 
 function parseDistance(value = '') {
   return Number(String(value).replace(',', '.').match(/\d+(\.\d+)?/)?.[0] || 99);
+}
+
+function sortGames(games, sort = 'recommended') {
+  const sorted = [...games];
+  if (sort === 'distance') return sorted.sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance));
+  if (sort === 'price' || sort === 'price-low') return sorted.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+  if (sort === 'popular' || sort === 'slots') return sorted.sort((a, b) => (Number(b.current || 0) / Math.max(1, Number(b.max || 1))) - (Number(a.current || 0) / Math.max(1, Number(a.max || 1))));
+  if (sort === 'start-time' || sort === 'soon') return sorted.sort((a, b) => new Date(a.startDateTime) - new Date(b.startDateTime));
+  return sorted.sort((a, b) => new Date(a.startDateTime) - new Date(b.startDateTime));
+}
+
+function sortVenues(venues, sort = 'recommended') {
+  const sorted = [...venues];
+  if (sort === 'distance') return sorted.sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance));
+  if (sort === 'price' || sort === 'price-low') return sorted.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+  if (sort === 'rating') return sorted.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
+  if (sort === 'popular' || sort === 'available') return sorted.sort((a, b) => Number(b.favorite || b.label === 'Популярная') - Number(a.favorite || a.label === 'Популярная'));
+  return sorted.sort((a, b) => Number(b.favorite || b.label === 'Популярная') - Number(a.favorite || a.label === 'Популярная'));
 }
 
 function toggleFilter(scope, value) {
@@ -2568,15 +3277,22 @@ function toggleFilter(scope, value) {
       if (typeof filters[key] === 'boolean') filters[key] = false;
       if (key === 'query') filters[key] = '';
       if (key === 'sport') filters[key] = 'Все';
+      if (key === 'sports') filters[key] = [];
       if (key === 'price') filters[key] = 'any';
+      if (key === 'priceMin') filters[key] = '';
+      if (key === 'priceMax') filters[key] = '';
+      if (key === 'type') filters[key] = 'any';
       if (key === 'location') filters[key] = 'Все';
       if (key === 'amenity') filters[key] = 'Все';
       if (key === 'distance') filters[key] = 'any';
+      if (key === 'distanceKm') filters[key] = 100;
       if (key === 'surface') filters[key] = 'Все';
       if (key === 'lighting') filters[key] = 'any';
       if (key === 'size') filters[key] = 'Все';
       if (key === 'rating') filters[key] = 'any';
       if (key === 'paid') filters[key] = 'any';
+      if (key === 'sort') filters[key] = 'recommended';
+      if (key === 'quickPinned') filters[key] = '';
       if (key === 'date') filters[key] = 'any';
       if (key === 'time') filters[key] = 'any';
       if (key === 'level') filters[key] = 'Все';
@@ -2585,8 +3301,12 @@ function toggleFilter(scope, value) {
     return;
   }
   if (typeof filters[value] === 'boolean') filters[value] = !filters[value];
-  if (scope === 'venues' && value?.startsWith('sport:')) filters.sport = filters.sport === value.slice(6) ? 'Все' : value.slice(6);
+  if (scope === 'venues' && value?.startsWith('sport:')) {
+    const sport = value.slice(6);
+    setVenueSportValues(filters, getVenueSportValues(filters).includes(sport) ? [] : [sport]);
+  }
   if (scope === 'venues' && value?.startsWith('price:')) filters.price = filters.price === value.slice(6) ? 'any' : value.slice(6);
+  if (scope === 'venues' && value?.startsWith('type:')) filters.type = filters.type === value.slice(5) ? 'any' : value.slice(5);
   if (scope === 'venues' && value?.startsWith('location:')) filters.location = filters.location === value.slice(9) ? 'Все' : value.slice(9);
   if (scope === 'venues' && value?.startsWith('amenity:')) filters.amenity = filters.amenity === value.slice(8) ? 'Все' : value.slice(8);
   if (scope === 'venues' && value?.startsWith('distance:')) filters.distance = filters.distance === value.slice(9) ? 'any' : value.slice(9);
@@ -2602,6 +3322,125 @@ function toggleFilter(scope, value) {
   if (scope === 'games' && value?.startsWith('level:')) filters.level = filters.level === value.slice(6) ? 'Все' : value.slice(6);
   if (scope === 'games' && value?.startsWith('price:')) filters.price = filters.price === value.slice(6) ? 'any' : value.slice(6);
   if (scope === 'games' && value?.startsWith('slots:')) filters.slots = filters.slots === value.slice(6) ? 'any' : value.slice(6);
+  if (isQuickFilterValue(scope, value)) {
+    filters.quickPinned = isFilterValueActive(scope, filters, value) ? value : '';
+  }
+}
+
+function setVenueDistanceRange(value) {
+  const distanceKm = clamp(value, 1, 100);
+  state.filters.venues.distanceKm = distanceKm;
+  state.filters.venues.distance = distanceKm >= 100 ? 'any' : 'range';
+  if (state.filters.venues.quickPinned === 'distance:near') state.filters.venues.quickPinned = '';
+}
+
+function updateVenueFilterDraft(value) {
+  if (!venueFilterDraft) venueFilterDraft = normalizeVenueFilters(clone(state.filters.venues));
+  if (value === 'reset') {
+    resetVenueFilterValues(venueFilterDraft);
+    return;
+  }
+  if (value?.startsWith('sport:')) {
+    const sport = value.slice(6);
+    const selected = getVenueSportValues(venueFilterDraft);
+    setVenueSportValues(
+      venueFilterDraft,
+      selected.includes(sport) ? selected.filter((item) => item !== sport) : [...selected, sport]
+    );
+    return;
+  }
+  if (value?.startsWith('type:')) {
+    venueFilterDraft.type = value.slice(5);
+    return;
+  }
+  if (value?.startsWith('distance:')) {
+    const next = value.slice(9);
+    const distanceKm = next === 'any' ? 100 : clamp(next, 1, 100);
+    venueFilterDraft.distanceKm = distanceKm;
+    venueFilterDraft.distance = next === 'any' || distanceKm >= 100 ? 'any' : 'range';
+    if (venueFilterDraft.quickPinned === 'distance:near') venueFilterDraft.quickPinned = '';
+    return;
+  }
+  if (value?.startsWith('size:')) {
+    const next = value.slice(5);
+    venueFilterDraft.size = venueFilterDraft.size === next ? 'Все' : next;
+  }
+}
+
+function setVenueDraftDistanceRange(value) {
+  if (!venueFilterDraft) venueFilterDraft = normalizeVenueFilters(clone(state.filters.venues));
+  const distanceKm = clamp(value, 1, 100);
+  venueFilterDraft.distanceKm = distanceKm;
+  venueFilterDraft.distance = distanceKm >= 100 ? 'any' : 'range';
+  if (venueFilterDraft.quickPinned === 'distance:near') venueFilterDraft.quickPinned = '';
+}
+
+function setVenueDraftPriceBound(bound, value) {
+  if (!venueFilterDraft) venueFilterDraft = normalizeVenueFilters(clone(state.filters.venues));
+  const clean = String(value || '').replace(/[^\d]/g, '');
+  if (bound === 'min') venueFilterDraft.priceMin = clean;
+  if (bound === 'max') venueFilterDraft.priceMax = clean;
+  const min = Number(venueFilterDraft.priceMin);
+  const max = Number(venueFilterDraft.priceMax);
+  if (venueFilterDraft.priceMin !== '' && venueFilterDraft.priceMax !== '' && max < min) {
+    if (bound === 'max') {
+      venueFilterDraft.priceMax = venueFilterDraft.priceMin;
+    } else {
+      venueFilterDraft.priceMax = venueFilterDraft.priceMin;
+    }
+  }
+  const hasPriceRange = Boolean(venueFilterDraft.priceMin || venueFilterDraft.priceMax);
+  venueFilterDraft.price = hasPriceRange ? 'range' : 'any';
+  return { min: venueFilterDraft.priceMin, max: venueFilterDraft.priceMax };
+}
+
+function syncVenuePriceControls(price) {
+  const next = price || {
+    min: venueFilterDraft?.priceMin || '',
+    max: venueFilterDraft?.priceMax || ''
+  };
+  const minInput = dom.sheetContent?.querySelector('[data-price-bound="min"]');
+  const maxInput = dom.sheetContent?.querySelector('[data-price-bound="max"]');
+  if (minInput instanceof HTMLInputElement) minInput.value = next.min;
+  if (maxInput instanceof HTMLInputElement) maxInput.value = next.max;
+}
+
+function updateVenueApplyButton() {
+  const button = dom.sheetContent?.querySelector('[data-action="apply-venue-filters"]');
+  const resetButton = dom.sheetContent?.querySelector('.filter-reset-button');
+  if (!button) return;
+  const hasChanges = hasVenueFilterChanges();
+  const canReset = hasChanges || activeVenueFilterCount(normalizeVenueFilters(venueFilterDraft || state.filters.venues)) > 0;
+  button.disabled = !hasChanges;
+  button.classList.toggle('is-active', hasChanges);
+  resetButton?.classList.toggle('is-active', canReset);
+}
+
+function syncVenueTypeSegment() {
+  const segment = dom.sheetContent?.querySelector('.type-segment');
+  if (!(segment instanceof HTMLElement)) return;
+  const activeType = venueFilterDraft?.type || 'any';
+  segment.dataset.active = activeType;
+  segment.querySelectorAll('button[data-value]').forEach((button) => {
+    button.classList.toggle('is-active', button.dataset.value === `type:${activeType}`);
+  });
+}
+
+function refreshVenueFilterDraftSheet() {
+  const body = dom.sheetContent?.querySelector('.filter-sheet-body');
+  const scrollTop = body?.scrollTop || 0;
+  dom.sheetContent.innerHTML = venuesFiltersSheet();
+  const nextBody = dom.sheetContent?.querySelector('.filter-sheet-body');
+  if (nextBody) nextBody.scrollTop = scrollTop;
+}
+
+function updateDistanceRangeControl(input) {
+  const value = clamp(input.value, 1, 100);
+  const control = input.closest('.distance-range-control');
+  const section = input.closest('.distance-range-section');
+  control?.style.setProperty('--range-progress', `${((value - 1) / 99) * 100}%`);
+  const label = section?.querySelector('[data-distance-value]');
+  if (label) label.textContent = value >= 100 ? 'до 100 км' : `до ${value} км`;
 }
 
 function openCreateGameSheet() {
@@ -2721,11 +3560,7 @@ function openTeamEventSheet(id) {
   const event = getSelectedTeam().events.find((item) => item.id === id);
   if (!event) return;
   openSheet(`
-    <div class="sheet-heading">
-      <span class="eyebrow">${event.type}</span>
-      <h2>${event.title}</h2>
-      <p>${event.time} · ${event.place}</p>
-    </div>
+    ${sheetHeader(event.type, event.title, `${event.time} · ${event.place}`)}
     <section class="section-card flat"><strong>${event.note}</strong></section>
     <button class="button button-primary button-full" type="button" data-action="create-game">Создать похожую игру</button>
   `);
@@ -2845,6 +3680,16 @@ function toggleFavorite(collection, id) {
   const item = state[collection].find((entry) => entry.id === id);
   if (!item) return;
   item.favorite = !item.favorite;
+  const action = collection === 'games' ? 'favorite-game' : 'favorite-venue';
+  const button = document.querySelector(`[data-action="${action}"][data-id="${escapeAttr(id)}"]`);
+  if (button instanceof HTMLElement) {
+    button.classList.remove('is-bouncing');
+    button.offsetHeight;
+    button.classList.add('is-bouncing');
+    button.classList.toggle('is-active', item.favorite);
+    button.setAttribute('aria-label', item.favorite ? 'Убрать из избранного' : 'Добавить в избранное');
+    window.setTimeout(() => button.classList.remove('is-bouncing'), 420);
+  }
   showToast(item.favorite ? 'Сохранено' : 'Убрано из сохраненных');
 }
 
@@ -2869,7 +3714,13 @@ function openSheet(markup) {
   clearTimeout(sheetCloseTimer);
   dom.sheetContent.innerHTML = markup;
   dom.sheetContent.scrollTop = 0;
+  bindDetailPhotoSliders();
   dom.sheetPanel?.classList.toggle('is-achievement-sheet', markup.includes('achievement-detail-sheet'));
+  dom.sheetPanel?.classList.toggle('is-filter-sheet', markup.includes('filter-sheet'));
+  dom.sheetPanel?.classList.toggle('is-sort-sheet', markup.includes('sort-sheet'));
+  dom.sheetPanel?.classList.toggle('is-notifications-sheet', markup.includes('notifications-sheet'));
+  dom.sheetPanel?.classList.toggle('is-detail-sheet', markup.includes('class="detail-sheet'));
+  dom.sheetPanel?.classList.toggle('is-location-sheet', markup.includes('location-sheet'));
   updateProfileStickyTitle();
   dom.sheet.hidden = false;
   dom.sheet.setAttribute('aria-hidden', 'false');
@@ -2899,6 +3750,12 @@ function closeSheet() {
     dom.sheet.classList.remove('is-closing');
     dom.sheetContent.innerHTML = '';
     dom.sheetPanel?.classList.remove('is-achievement-sheet');
+    dom.sheetPanel?.classList.remove('is-filter-sheet');
+    dom.sheetPanel?.classList.remove('is-sort-sheet');
+    dom.sheetPanel?.classList.remove('is-notifications-sheet');
+    dom.sheetPanel?.classList.remove('is-detail-sheet');
+    dom.sheetPanel?.classList.remove('is-location-sheet');
+    venueFilterDraft = null;
     if (dom.sheetPanel) dom.sheetPanel.style.transform = '';
     document.body.classList.remove('has-open-sheet');
   }, SHEET_CLOSE_ANIMATION_MS);

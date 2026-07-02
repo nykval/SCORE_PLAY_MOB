@@ -1,14 +1,63 @@
 import { emptyState, statCard } from './ui.js';
-import { escapeAttr, escapeHtml, formatGameDate, formatPrice, getAvatarSrc, getGameStatus, toInputDate, uniqueSports } from '../utils/format.js';
+import { escapeAttr, escapeHtml, formatGameDate, formatPrice, getAvatarSrc, getGameStatus, getSportImage, toInputDate, uniqueSports } from '../utils/format.js';
+
+function sheetHeader(label, title = '', text = '') {
+  return `
+    <div class="filter-sheet-header sheet-standard-header">
+      <span>${escapeHtml(label)}</span>
+      ${title ? `<h2>${escapeHtml(title)}</h2>` : ''}
+      ${text ? `<p>${escapeHtml(text)}</p>` : ''}
+    </div>
+  `;
+}
+
+function uniqueImageList(images) {
+  const seen = new Set();
+  return images.filter((src) => {
+    if (!src || seen.has(src)) return false;
+    seen.add(src);
+    return true;
+  });
+}
+
+function detailPhotoSlider(images, title, meta = '') {
+  const slides = uniqueImageList(images).slice(0, 4);
+  if (!slides.length) return '';
+  return `
+    <section class="detail-photo-slider" aria-label="Фотографии">
+      <div class="detail-photo-track">
+        ${slides.map((src, index) => `
+          <figure class="detail-photo-slide">
+            <img src="${escapeAttr(src)}" alt="${escapeAttr(`${title} фото ${index + 1}`)}">
+          </figure>
+        `).join('')}
+      </div>
+      ${slides.length > 1 ? `<div class="detail-photo-dots">${slides.map((_, index) => `<span class="${index === 0 ? 'is-active' : ''}"></span>`).join('')}</div>` : ''}
+    </section>
+  `;
+}
+
+function getGameDetailPhotos(game, state = {}) {
+  const relatedVenues = (state.venues || []).filter((venue) => venue.name === game.place || venue.sport === game.sport);
+  return uniqueImageList([
+    ...relatedVenues.map((venue) => venue.photo),
+    game.image,
+    getSportImage(game.sport)
+  ]);
+}
+
+function getVenueDetailPhotos(venue, state = {}) {
+  const relatedVenues = (state.venues || []).filter((item) => item.id !== venue.id && item.sport === venue.sport);
+  return uniqueImageList([
+    venue.photo,
+    ...relatedVenues.map((item) => item.photo)
+  ]);
+}
 
 export function createGameSheet({ state, defaultDate }) {
   return `
     <div class="sheet-state" data-sheet-state="form">
-      <div class="sheet-heading">
-        <span class="eyebrow">Новая игра</span>
-        <h2>Создать игру</h2>
-        <p>Заполните ключевые детали, чтобы игроки сразу понимали формат и условия.</p>
-      </div>
+      ${sheetHeader('Новая игра', 'Создать игру', 'Заполните ключевые детали, чтобы игроки сразу понимали формат и условия.')}
       <form id="create-game-form" class="form-grid" novalidate>
         <label class="field">Название<input name="title" required placeholder="Например, Футбол вечером"></label>
         <div class="form-pair">
@@ -62,119 +111,115 @@ export function achievementDetailSheet(achievement) {
   `;
 }
 
-export function gameDetailSheet(game) {
+export function gameDetailSheet(game, state = {}) {
   const status = getGameStatus(game);
   const players = game.players || [];
   return `
-    <img class="sheet-hero" src="${game.image}" alt="${escapeAttr(game.title)}">
-    <div class="sheet-heading">
-      <span class="eyebrow">${escapeHtml(game.sport)} · ${escapeHtml(game.format)}</span>
-      <h2>${escapeHtml(game.title)}</h2>
-      <p>${escapeHtml(game.description)}</p>
-    </div>
-    <div class="stats-grid detail-grid">
-      ${statCard('Когда', formatGameDate(game))}
-      ${statCard('Место', game.place)}
-      ${statCard('Состав', `${game.current}/${game.max}`)}
-      ${statCard('Цена', formatPrice(game.price))}
-      ${statCard('Уровень', game.level)}
-      ${statCard('Статус', status.label)}
-    </div>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <div><span class="eyebrow">Организатор</span><h3>${escapeHtml(game.organizer)}</h3></div>
-        <span class="meta-pill">Рейтинг ${game.rating}</span>
+    <div class="detail-sheet game-detail-sheet">
+      <div class="detail-scroll-body">
+        ${detailPhotoSlider(getGameDetailPhotos(game, state), game.title, `${game.sport} · ${game.place}`)}
+        ${sheetHeader(`${game.sport} · ${game.format}`, game.title, game.description)}
+        <div class="stats-grid detail-grid">
+          ${statCard('Когда', formatGameDate(game))}
+          ${statCard('Место', game.place)}
+          ${statCard('Состав', `${game.current}/${game.max}`)}
+          ${statCard('Цена', formatPrice(game.price))}
+          ${statCard('Уровень', game.level)}
+          ${statCard('Статус', status.label)}
+        </div>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <div><span class="eyebrow">Организатор</span><h3>${escapeHtml(game.organizer)}</h3></div>
+            <span class="meta-pill">Рейтинг ${game.rating}</span>
+          </div>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <h3>Площадка</h3>
+            <span class="meta-pill">${escapeHtml(game.distance || 'рядом')}</span>
+          </div>
+          <p class="detail-copy">${escapeHtml(game.place)} · м. ${escapeHtml(game.metro)} · ${escapeHtml(game.district)}</p>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <h3>Игроки</h3>
+            <span class="meta-pill">${game.current}/${game.max}</span>
+          </div>
+          <div class="player-chip-grid">
+            ${players.length ? players.map((name) => `<span>${escapeHtml(name)}</span>`).join('') : '<span>Список появится после подключения backend</span>'}
+          </div>
+        </section>
+        <section class="section-card flat">
+          <div class="game-social-grid">
+            <button type="button" data-action="open-game-chat"><strong>Чат игры</strong><span>${game.chat || 0} сообщений</span></button>
+            <button type="button" data-action="open-game-chat"><strong>Комментарии</strong><span>${game.comments || 0} обсуждений</span></button>
+          </div>
+        </section>
       </div>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <h3>Площадка</h3>
-        <span class="meta-pill">${escapeHtml(game.distance || 'рядом')}</span>
+      <div class="card-actions">
+        <button class="detail-favorite-button ${game.favorite ? 'is-active' : ''}" type="button" data-action="favorite-game" data-id="${game.id}" aria-label="${game.favorite ? 'Убрать из избранного' : 'Добавить в избранное'}">
+          <img src="./icons/favorite.png" alt="" aria-hidden="true">
+        </button>
+        <button class="button button-primary" type="button" data-action="join-game" data-id="${game.id}" ${game.current >= game.max && !game.joined ? 'disabled' : ''}>${game.joined ? 'Выйти из игры' : 'Участвовать'}</button>
       </div>
-      <p class="detail-copy">${escapeHtml(game.place)} · м. ${escapeHtml(game.metro)} · ${escapeHtml(game.district)}</p>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <h3>Игроки</h3>
-        <span class="meta-pill">${game.current}/${game.max}</span>
-      </div>
-      <div class="player-chip-grid">
-        ${players.length ? players.map((name) => `<span>${escapeHtml(name)}</span>`).join('') : '<span>Список появится после подключения backend</span>'}
-      </div>
-    </section>
-    <section class="section-card flat">
-      <div class="game-social-grid">
-        <button type="button" data-action="open-game-chat"><strong>Чат игры</strong><span>${game.chat || 0} сообщений</span></button>
-        <button type="button" data-action="open-game-chat"><strong>Комментарии</strong><span>${game.comments || 0} обсуждений</span></button>
-      </div>
-    </section>
-    <div class="card-actions">
-      <button class="button button-secondary" type="button" data-action="favorite-game" data-id="${game.id}">${game.favorite ? 'В избранном' : 'Сохранить'}</button>
-      <button class="button button-primary" type="button" data-action="join-game" data-id="${game.id}" ${game.current >= game.max && !game.joined ? 'disabled' : ''}>${game.joined ? 'Выйти из игры' : 'Участвовать'}</button>
     </div>
   `;
 }
 
-export function venueDetailSheet(venue) {
+export function venueDetailSheet(venue, state = {}) {
   return `
-    <img class="sheet-hero" src="${venue.photo}" alt="${escapeAttr(venue.name)}">
-    <div class="sheet-heading">
-      <span class="eyebrow">${escapeHtml(venue.sport)} · ${escapeHtml(venue.label)}</span>
-      <h2>${escapeHtml(venue.name)}</h2>
-      <p>${escapeHtml(venue.description)}</p>
-    </div>
-    <div class="stats-grid detail-grid">
-      ${statCard('Цена', venue.price === 0 ? 'Бесплатно' : `${formatPrice(venue.price)}/ч`)}
-      ${statCard('Метро', venue.metro)}
-      ${statCard('Рейтинг', venue.rating)}
-      ${statCard('Тип', venue.indoor ? 'В помещении' : 'Открытая')}
-    </div>
-    <section class="venue-gallery">
-      <img src="${venue.photo}" alt="">
-      <img src="${venue.photo}" alt="">
-      <img src="${venue.photo}" alt="">
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact"><h3>Описание</h3></div>
-      <p class="detail-copy">${escapeHtml(venue.description)}</p>
-      <div class="chip-scroll wrap">
-        <span class="meta-pill">${escapeHtml(venue.distance || 'рядом')}</span>
-        <span class="meta-pill">${escapeHtml(venue.surface || 'покрытие')}</span>
-        <span class="meta-pill">${escapeHtml(venue.size || 'размер')}</span>
-        <span class="meta-pill">${escapeHtml(venue.freeTime || 'свободное время')}</span>
+    <div class="detail-sheet venue-detail-sheet">
+      <div class="detail-scroll-body">
+        ${detailPhotoSlider(getVenueDetailPhotos(venue, state), venue.name, `${venue.sport} · ${venue.label}`)}
+        ${sheetHeader(`${venue.sport} · ${venue.label}`, venue.name, venue.description)}
+        <div class="stats-grid detail-grid">
+          ${statCard('Цена', venue.price === 0 ? 'Бесплатно' : `${formatPrice(venue.price)}/ч`)}
+          ${statCard('Метро', venue.metro)}
+          ${statCard('Рейтинг', venue.rating)}
+          ${statCard('Тип', venue.indoor ? 'В помещении' : 'Открытая')}
+        </div>
+        <section class="section-card flat">
+          <div class="section-header compact"><h3>Описание</h3></div>
+          <p class="detail-copy">${escapeHtml(venue.description)}</p>
+          <div class="chip-scroll wrap">
+            <span class="meta-pill">${escapeHtml(venue.distance || 'рядом')}</span>
+            <span class="meta-pill">${escapeHtml(venue.surface || 'покрытие')}</span>
+            <span class="meta-pill">${escapeHtml(venue.size || 'размер')}</span>
+            <span class="meta-pill">${escapeHtml(venue.freeTime || 'свободное время')}</span>
+          </div>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact">
+            <h3>Отзывы</h3>
+            <span class="meta-pill">${venue.reviews || 0} отзывов</span>
+          </div>
+          <p class="detail-copy">Игроки отмечают удобное расположение, чистые раздевалки и стабильное освещение вечером.</p>
+        </section>
+        <section class="section-card flat">
+          <div class="section-header compact"><h3>Расписание</h3></div>
+          <div class="schedule-grid">
+            ${(venue.schedule || []).map((slot) => `<span>${escapeHtml(slot)}</span>`).join('')}
+          </div>
+        </section>
+        <div class="chip-scroll wrap">${(venue.amenities || []).map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
+        <section class="section-card flat">
+          <div class="section-header compact"><h3>Похожие площадки</h3></div>
+          <p class="detail-copy">Еще 4 площадки с похожей ценой и доступным временем рядом с вашим районом.</p>
+        </section>
       </div>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact">
-        <h3>Отзывы</h3>
-        <span class="meta-pill">${venue.reviews || 0} отзывов</span>
+      <div class="card-actions">
+        <button class="detail-favorite-button ${venue.favorite ? 'is-active' : ''}" type="button" data-action="favorite-venue" data-id="${venue.id}" aria-label="${venue.favorite ? 'Убрать из избранного' : 'Добавить в избранное'}">
+          <img src="./icons/favorite.png" alt="" aria-hidden="true">
+        </button>
+        <button class="button button-primary" type="button" data-action="book-selected-venue">Забронировать</button>
       </div>
-      <p class="detail-copy">Игроки отмечают удобное расположение, чистые раздевалки и стабильное освещение вечером.</p>
-    </section>
-    <section class="section-card flat">
-      <div class="section-header compact"><h3>Расписание</h3></div>
-      <div class="schedule-grid">
-        ${(venue.schedule || []).map((slot) => `<span>${escapeHtml(slot)}</span>`).join('')}
-      </div>
-    </section>
-    <div class="chip-scroll wrap">${(venue.amenities || []).map((item) => `<span class="meta-pill">${escapeHtml(item)}</span>`).join('')}</div>
-    <section class="section-card flat">
-      <div class="section-header compact"><h3>Похожие площадки</h3></div>
-      <p class="detail-copy">Еще 4 площадки с похожей ценой и доступным временем рядом с вашим районом.</p>
-    </section>
-    <div class="card-actions">
-      <button class="button button-secondary" type="button" data-action="favorite-venue" data-id="${venue.id}">${venue.favorite ? 'В избранном' : 'Сохранить'}</button>
-      <button class="button button-primary" type="button" data-action="book-selected-venue">Забронировать</button>
     </div>
   `;
 }
 
 export function teamRequestsSheet(team) {
   return `
-    <div class="sheet-heading">
-      <span class="eyebrow">${escapeHtml(team.name)}</span>
-      <h2>Заявки и приглашения</h2>
-    </div>
+    ${sheetHeader(team.name, 'Заявки и приглашения')}
     ${team.requests.length ? team.requests.map(([name, meta]) => `
       <div class="list-row">
         <div><strong>${escapeHtml(name)}</strong><span>${escapeHtml(meta)}</span></div>
@@ -186,11 +231,7 @@ export function teamRequestsSheet(team) {
 
 export function notificationsSheet(notifications) {
   return `
-    <div class="sheet-heading">
-      <span class="eyebrow">SCORE</span>
-      <h2>Уведомления</h2>
-      <p>Игры, площадки и заявки, которые требуют внимания.</p>
-    </div>
+    ${sheetHeader('SCORE', 'Уведомления', 'Игры, площадки и заявки, которые требуют внимания.')}
     <div class="notification-list">
       ${notifications.length ? notifications.map((item) => `
         <article class="notification-card ${item.unread ? 'is-unread' : ''}">

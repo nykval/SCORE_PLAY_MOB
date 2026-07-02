@@ -7,13 +7,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SCORE PLAY Mobile</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon-s.svg">
+  <link rel="icon" type="image/png" href="./icons/logo-blue.png">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="./styles.css?v=20260627-assets2">
+  <link rel="stylesheet" href="./styles.css?v=20260629-filter-polish2">
 </head>
 <body>
   <div id="app" class="app-shell">
@@ -38,9 +38,10 @@
 
     <main id="mobile-app" class="mobile-app" hidden>
       <header class="app-header">
-        <button class="location-button" type="button" aria-label="Город">
+        <button class="location-button" type="button" data-action="open-location-sheet" aria-label="Выбрать город">
           <img src="./icons/location.png" alt="" aria-hidden="true">
           <strong id="screen-location">Москва</strong>
+          <img class="location-button-arrow" src="./icons/arrow.png" alt="" aria-hidden="true">
         </button>
         <div class="header-actions">
           <button id="notifications-shortcut" class="icon-shortcut" type="button" data-action="open-notifications" aria-label="Уведомления">
@@ -59,6 +60,11 @@
       <section id="screen-progress" class="app-screen" data-screen="progress" aria-label="Прогресс"></section>
       <section id="screen-team" class="app-screen" data-screen="team" aria-label="Команда"></section>
       <section id="screen-profile" class="app-screen" data-screen="profile" aria-label="Профиль"></section>
+
+      <button id="floating-create-game" class="floating-create-game" type="button" data-action="create-game" aria-label="Создать игру" hidden>
+        <span aria-hidden="true">+</span>
+        <strong>Создать игру</strong>
+      </button>
 
       <nav class="bottom-nav" aria-label="Основная навигация">
         <button class="is-active" type="button" data-nav="home" aria-label="Главная"><span aria-hidden="true"><img src="./icons/home.png" alt=""></span><strong>Главная</strong></button>
@@ -79,7 +85,7 @@
     <div id="toast" class="toast" hidden></div>
   </div>
 
-  <script src="./app.classic.js?v=20260627-sheet-smooth1"></script>
+  <script src="./app.classic.js?v=20260629-filter-polish2"></script>
   <script>
     window.addEventListener('DOMContentLoaded', function () {
       var form = document.querySelector('#login-form');

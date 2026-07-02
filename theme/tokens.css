@@ -27,8 +27,9 @@
   --radius-pill: 999px;
   --shadow-card: 0 14px 34px rgba(63, 130, 241, 0.12);
   --shadow-nav: 0 18px 44px rgba(42, 95, 203, 0.18);
-  --font-ui: "Manrope", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: "Nunito", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tg-top-offset: 0px;
   --nav-height: 78px;
 }
